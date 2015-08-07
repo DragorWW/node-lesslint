@@ -124,7 +124,7 @@ k
     ;
 
 v
-    : space_or_empty IDENT SEMICOLON
+    : space_or_empty IDENT semicolon_or_empty
         {
             debug('v', 'space_or_empty IDENT semicolon_or_empty');
         }
