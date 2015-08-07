@@ -1,5 +1,7 @@
 %{
     var chalk = require('chalk');
+    var safeStringify = require('json-stringify-safe');
+
     var variables = [];
     var resultAst = {
         variables: [],
@@ -38,15 +40,15 @@
 // %nonassoc block
 // %nonassoc kvs
 // %nonassoc kv
-%nonassoc IDENT
-%nonassoc SELECTOR
+// %nonassoc IDENT
+// %nonassoc SELECTOR
 
 
 %start root
 %%
 
 root
-    : nodes EOF
+    : lines EOF
         {
             return {
                 root: resultAst
@@ -60,183 +62,63 @@ root
         }
     ;
 
-nodes
-    : node
+lines
+    : line N
         {
-            debug('nodes', 'node');
+            debug('lines', 'line N');
         }
-    | nodes node
+    | lines line N
         {
-            debug('nodes', 'nodes node');
-        }
-    ;
-
-node
-    : selector block BRACE_END n_or_empty
-        {
-            debug('node', 'selector block BRACE_END n_or_empty');
+            debug('lines', 'lines line N');
         }
     ;
 
-selector
-    : IDENT space_or_empty BRACE_BEGIN n_or_empty
+line
+    : IDENT S BRACE_BEGIN
         {
-            console.warn('选择器');
-            debug('selector', 'IDENT space_or_empty BRACE_BEGIN n_or_empty');
+            debug('line', 'IDENT S BRACE_BEGIN');
+        }
+    | S IDENT S BRACE_BEGIN
+        {
+            debug('line', 'S IDENT S BRACE_BEGIN');
+        }
+
+    | S PROPERTY COLON S VALUE SEMICOLON
+        {
+            debug('line', 'S PROPERTY COLON S VALUE SEMICOLON');
+        }
+    | BRACE_END
+        {
+            debug('line', 'BRACE_END');
+        }
+    | S BRACE_END
+        {
+            debug('line', 'S BRACE_END');
+        }
+
+    | line IDENT S BRACE_BEGIN
+        {
+            debug('line', 'line IDENT S BRACE_BEGIN');
+        }
+    | line S IDENT S BRACE_BEGIN
+        {
+            debug('line', 'line S IDENT S BRACE_BEGIN');
+        }
+    | line S PROPERTY COLON S VALUE SEMICOLON
+        {
+            debug('line', 'line S PROPERTY COLON S VALUE SEMICOLON');
+        }
+    | line BRACE_END
+        {
+            debug('line', 'line BRACE_END');
+        }
+    | line S BRACE_END
+        {
+            debug('line', 'line S BRACE_END');
         }
     ;
 
-block
-    : kvs
-        {
-            debug('block', 'kvs');
-        }
-    // | block kvs
-    //     {
-    //         debug('block', 'block kvs');
-    //     }
-    ;
-
-kvs
-    : kv n_or_empty
-        {
-            debug('kvs', 'kv');
-        }
-    | kvs kv n_or_empty
-        {
-            debug('kvs', 'kvs kv n_or_empty');
-        }
-    ;
-
-kv
-    : k COLON v
-        {
-            console.warn('属性');
-            debug('kv', 'k COLON v');
-        }
-    ;
-
-k
-    : space_or_empty IDENT
-        {
-            debug('k', 'space_or_empty IDENT');
-        }
-    ;
-
-v
-    : space_or_empty IDENT semicolon_or_empty
-        {
-            debug('v', 'space_or_empty IDENT semicolon_or_empty');
-        }
-    ;
-
-n_or_empty
-    : N
-        {
-            debug('n_or_empty', 'N');
-        }
-    | empty
-        {
-            debug('n_or_empty', 'empty');
-        }
-    ;
-
-space_or_empty
-    : S
-        {
-            debug('space_or_empty', 'S');
-        }
-    | empty
-        {
-            debug('space_or_empty', 'empty');
-        }
-    ;
-
-semicolon_or_empty
-    : SEMICOLON
-        {
-            debug('semicolon_or_empty', 'SEMICOLON');
-        }
-    | empty
-        {
-            debug('semicolon_or_empty', 'empty');
-        }
-    ;
-
-empty
-    : -> ''
-    ;
-
-// node
-//     : selector S BRACE_BEGIN N kvs N BRACE_END N
-//         {
-//             debug('node', 'selector S BRACE_BEGIN N block N BRACE_END N');
-//         }
-//     // | selector S BRACE_BEGIN N block N BRACE_END N
-//     //     {
-//     //         debug('node', 'selector S BRACE_BEGIN N block N BRACE_END N');
-//     //     }
-//     // | node selector N block N
-//         // {
-//             // debug('node', 'node selector N block');
-//         // }
-//     ;
-
-// selector
-//     : IDENT
-//         {
-//             debug('selector', 'IDENT');
-//         }
-//     ;
-
-// // block
-// //     : kvs
-// //         {
-// //             debug('block', 'kvs');
-// //         }
-// //     ;
-
-// kvs
-//     : kv
-//         {
-//             debug('kvs', 'kv');
-//         }
-//     // | kv k COLON v
-//     //     {
-//     //         debug('kv', 'kv k COLON v');
-//     //     }
-//     ;
-
-// kv
-//     : k COLON v
-//         {
-//             debug('kv', 'k COLON v');
-//         }
-//     // | kv k COLON v
-//     //     {
-//     //         console.warn(111);
-//     //     }
-//     // | kv k COLON v
-//     //     {
-//     //         debug('kv', 'kv k COLON v');
-//     //     }
-//     ;
-
-// k
-//     : S IDENT
-//         {
-//             debug('k', 'S IDENT S');
-//         }
-//     ;
-
-// v
-//     : S IDENT SEMICOLON
-//         {
-//             debug('v', 'S IDENT S semicolon_or_empty');
-//         }
-//     ;
-
-
+// N*
 // n_or_empty
 //     : N
 //         {
@@ -248,78 +130,18 @@ empty
 //         }
 //     ;
 
-// space_or_empty
+// // S*
+// s_or_empty
 //     : S
 //         {
-//             debug('space_or_empty', 'S');
+//             debug('s_or_empty', 'S');
 //         }
 //     | empty
 //         {
-//             debug('space_or_empty', 'empty');
-//         }
-//     ;
-
-// semicolon_or_empty
-//     : SEMICOLON
-//         {
-//             debug('semicolon_or_empty', 'SEMICOLON');
-//         }
-//     | empty
-//         {
-//             debug('semicolon_or_empty', 'empty');
+//             debug('s_or_empty', 'empty');
 //         }
 //     ;
 
 // empty
 //     : -> ''
-//     ;
-
-
-// root
-//     : TEST1 space_or_empty TEST2 N
-//         {
-//             console.warn($2);
-//             console.warn($1, $3);
-//         }
-//     ;
-
-// space_or_empty
-//     : S
-//         {
-//             debug('space_or_empty', 'S');
-//         }
-//     | empty
-//         {
-//             debug('space_or_empty', 'empty');
-//         }
-//     ;
-
-// empty
-//     : -> ''
-//     ;
-
-
-/* S+ */
-// at_least_one_space
-//     : S
-//         {
-//             console.warn($1.length);
-//             debug('at_least_one_space', 'S');
-//         }
-//     | at_least_one_space S
-//         {
-//             debug('at_least_one_space', 'at_least_one_space S');
-//         }
-//     ;
-
-// /* S* */
-// space_or_empty
-//     : at_least_one_space
-//         {
-//             debug('space_or_empty', 'at_least_one_space');
-//         }
-//     | empty
-//         {
-//             debug('space_or_empty', 'empty');
-//         }
 //     ;

@@ -8,7 +8,9 @@
 
 // b 开始状态
 // c 注释的状态
-%x b c
+// block 选择器内部的状态
+// sub_block 选择器内部子选择器内部的状态
+%x b c block sub_block property
 
 // 不需要 \r 了，解析前已经做了替换
 n                           \n+
@@ -38,20 +40,103 @@ comment                     ^(\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?|\/\/[\s\S]*)
 // <b>([0-9]+(\.[0-9]+)?)|(\.[0-9]+) {return 'TEST2'}
 
 // 注释先忽略
-<b>{comment}                   { this.begin('c');}
-<b>{n}                         { /*console.log(this, '11');*/ return 'N'; }
-<b>{s}                         { /*console.log(this, '11');*/ return 'S'; }
-<b>{colon}                     { return 'COLON'; }
-<b>{semicolon}                 { return 'SEMICOLON'; }
-<b>'{'                         { return 'BRACE_BEGIN'; }
-<b>'}'                         { return 'BRACE_END'; }
+<b>{comment}
+    {
+        this.begin('c');
+    }
+;
 
-// <b>{selector}                     { /*console.log(yytext);*/ return 'SELECTOR';}
-<b>{ident}                     { /*console.log(yytext);*/ return 'IDENT';}
+<b,block,sub_block,property>{n}
+    {
+        // console.log(this, '11');
+        return 'N';
+    }
+;
 
-<INITIAL><<EOF>>            { return 'EOF'; }
-<b,c><<EOF>>                  { this.popState(); return 'EOF'; }
-<INITIAL>                   { this.begin('b');}
+<b,block,sub_block,property>{s}
+    {
+        // console.log(this, '11');
+        return 'S';
+    }
+;
+
+<b,block,sub_block,property>{colon}
+    {
+        return 'COLON';
+    }
+;
+
+<b,block,sub_block,property>{semicolon}
+    {
+        return 'SEMICOLON';
+    }
+;
+
+<b,block,sub_block>'{'
+    {
+        if (this.topState() === 'block') {
+            this.begin('sub_block');
+        }
+        else {
+            this.begin('block');
+        }
+        // console.warn(this.topState(), 'rrr');
+        return 'BRACE_BEGIN';
+    }
+;
+
+<block,sub_block>'}'
+    {
+        // if (this.topState() === 'sub_block') {
+        //     this.begin('block');
+        // }
+        // else {
+            this.popState();
+        // }
+        return 'BRACE_END';
+    }
+;
+
+<block,sub_block>{ident}\s*/{colon}
+    {
+        this.begin('property');
+        // console.log(yytext, this.topState(), 'property');
+        return 'PROPERTY';
+    }
+;
+
+<property>{ident}
+    {
+        this.popState();
+        // console.log(yytext, this.topState(), 'ssss');
+        return 'VALUE';
+    }
+;
+
+<b,block,sub_block>{ident}
+    {
+        return 'IDENT';
+    }
+;
+
+<INITIAL><<EOF>>
+    {
+        return 'EOF';
+    }
+;
+
+<b,c><<EOF>>
+    {
+        this.popState();
+        return 'EOF';
+    }
+;
+
+<INITIAL>
+    {
+        this.begin('b');
+    }
+;
 
 // {number}                    { return 'NUMBER'; }
 // {string}                    { return 'STRING'; }
