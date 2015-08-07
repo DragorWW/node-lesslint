@@ -74,43 +74,60 @@ lines
     ;
 
 line
-    : IDENT S BRACE_BEGIN
+    : IDENT BRACE_BEGIN
         {
+            console.warn($1);
+            console.warn('选择器');
+            debug('line', 'IDENT BRACE_BEGIN');
+        }
+    | line IDENT BRACE_BEGIN
+        {
+            debug('line', 'line IDENT BRACE_BEGIN');
+        }
+
+    | IDENT S BRACE_BEGIN
+        {
+            console.warn($1);
+            console.warn('选择器');
             debug('line', 'IDENT S BRACE_BEGIN');
         }
+    | line IDENT S BRACE_BEGIN
+        {
+            debug('line', 'line IDENT S BRACE_BEGIN');
+        }
+
     | S IDENT S BRACE_BEGIN
         {
+            console.warn($2);
+            console.warn('子选择器');
             debug('line', 'S IDENT S BRACE_BEGIN');
+        }
+    | line S IDENT S BRACE_BEGIN
+        {
+            debug('line', 'line S IDENT S BRACE_BEGIN');
         }
 
     | S PROPERTY COLON S VALUE SEMICOLON
         {
             debug('line', 'S PROPERTY COLON S VALUE SEMICOLON');
         }
-    | BRACE_END
-        {
-            debug('line', 'BRACE_END');
-        }
-    | S BRACE_END
-        {
-            debug('line', 'S BRACE_END');
-        }
-
-    | line IDENT S BRACE_BEGIN
-        {
-            debug('line', 'line IDENT S BRACE_BEGIN');
-        }
-    | line S IDENT S BRACE_BEGIN
-        {
-            debug('line', 'line S IDENT S BRACE_BEGIN');
-        }
     | line S PROPERTY COLON S VALUE SEMICOLON
         {
             debug('line', 'line S PROPERTY COLON S VALUE SEMICOLON');
         }
+
+    | BRACE_END
+        {
+            debug('line', 'BRACE_END');
+        }
     | line BRACE_END
         {
             debug('line', 'line BRACE_END');
+        }
+
+    | S BRACE_END
+        {
+            debug('line', 'S BRACE_END');
         }
     | line S BRACE_END
         {
