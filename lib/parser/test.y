@@ -41,7 +41,10 @@
 // %nonassoc kvs
 // %nonassoc kv
 // %nonassoc IDENT
-// %nonassoc SELECTOR
+
+%nonassoc selector
+%nonassoc IDENT
+%nonassoc S N BRACE_BEGIN
 
 
 %start root
@@ -73,47 +76,63 @@ lines
         }
     ;
 
-line
+selector
     : IDENT BRACE_BEGIN
         {
-            console.warn($1);
-            console.warn('选择器');
-            debug('line', 'IDENT BRACE_BEGIN');
+            debug('selector', 'IDENT BRACE_BEGIN');
         }
-    | line IDENT BRACE_BEGIN
-        {
-            debug('line', 'line IDENT BRACE_BEGIN');
-        }
-
     | IDENT S BRACE_BEGIN
         {
-            console.warn($1);
+            debug('selector', 'IDENT S BRACE_BEGIN');
+        }
+    ;
+
+prop_value
+    : PROPERTY COLON S VALUE SEMICOLON
+        {
+            $$ = $1 + '_' + $4;
+            debug('prop_value', 'PROPERTY COLON S VALUE SEMICOLON');
+        }
+    ;
+
+line
+    : selector
+        {
+            $$ = $1;
+            console.warn($$);
             console.warn('选择器');
-            debug('line', 'IDENT S BRACE_BEGIN');
+            debug('line', 'selector');
         }
-    | line IDENT S BRACE_BEGIN
+    | line selector
         {
-            debug('line', 'line IDENT S BRACE_BEGIN');
+            debug('line', 'line selector');
         }
 
-    | S IDENT S BRACE_BEGIN
+    | S selector
         {
-            console.warn($2);
+            $$ = $2;
+            console.warn($$);
             console.warn('子选择器');
-            debug('line', 'S IDENT S BRACE_BEGIN');
+            debug('line', 'S selector');
         }
-    | line S IDENT S BRACE_BEGIN
+    | line S selector
         {
-            debug('line', 'line S IDENT S BRACE_BEGIN');
+            debug('line', 'line S selector');
         }
 
-    | S PROPERTY COLON S VALUE SEMICOLON
+    | S prop_value
         {
-            debug('line', 'S PROPERTY COLON S VALUE SEMICOLON');
+            $$ = $2;
+            console.warn($$);
+            console.warn('属性');
+            debug('line', 'S prop_value');
         }
-    | line S PROPERTY COLON S VALUE SEMICOLON
+    | line S prop_value
         {
-            debug('line', 'line S PROPERTY COLON S VALUE SEMICOLON');
+            $$ = $3;
+            console.warn($$);
+            console.warn('属性');
+            debug('line', 'line S prop_value');
         }
 
     | BRACE_END
