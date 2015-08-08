@@ -88,25 +88,26 @@ selector
     ;
 
 prop_value
-    : S PROPERTY COLON S VALUE SEMICOLON
+    : S PROPERTY COLON S VALUE semicolon_or_empty
         {
             $$ = $2 + '_' + $5;
-            debug('prop_value', 'S PROPERTY COLON S VALUE SEMICOLON');
+            debug('prop_value', 'S PROPERTY COLON S VALUE semicolon_or_empty');
         }
-    | PROPERTY COLON S VALUE SEMICOLON
+    | PROPERTY COLON S VALUE semicolon_or_empty
         {
             $$ = $1 + '_' + $4;
-            debug('prop_value', 'PROPERTY COLON S VALUE SEMICOLON');
+            debug('prop_value', 'PROPERTY COLON S VALUE semicolon_or_empty');
         }
-    | S PROPERTY COLON VALUE SEMICOLON
+    | S PROPERTY COLON VALUE semicolon_or_empty
         {
             $$ = $2 + '_' + $4;
-            debug('prop_value', 'S PROPERTY COLON VALUE SEMICOLON');
+            debug('prop_value', 'S PROPERTY COLON VALUE semicolon_or_empty');
         }
-    | PROPERTY COLON VALUE SEMICOLON
+    | PROPERTY COLON VALUE semicolon_or_empty
         {
+            console.warn($4, 'sds');
             $$ = $1 + '_' + $3;
-            debug('prop_value', 'PROPERTY COLON VALUE SEMICOLON');
+            debug('prop_value', 'PROPERTY COLON VALUE semicolon_or_empty');
         }
     ;
 
@@ -169,6 +170,25 @@ line
         }
     ;
 
+// SEMICOLON*
+semicolon_or_empty
+    : SEMICOLON
+        {
+            debug('semicolon_or_empty', 'SEMICOLON');
+        }
+    | empty
+        {
+            debug('semicolon_or_empty', 'empty');
+        }
+    ;
+
+empty
+    : -> ''
+    ;
+
+
+
+
 // N*
 // n_or_empty
 //     : N
@@ -191,8 +211,4 @@ line
 //         {
 //             debug('s_or_empty', 'empty');
 //         }
-//     ;
-
-// empty
-//     : -> ''
 //     ;
