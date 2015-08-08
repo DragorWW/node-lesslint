@@ -6,11 +6,12 @@
 // %s 指包容性的状态，%x 指非包容性的状态
 // 如果是包容性的状态，那么没有状态的规则也会被激活；如果是非包容的，那么只有声明了相应状态的规则才会被激活。
 
-// b 开始状态
+// s 开始状态
 // c 注释的状态
-// block 选择器内部的状态
-// sub_block 选择器内部子选择器内部的状态
-%x b c block sub_block property
+// b 选择器内部即块的状态
+// sb 选择器内部子选择器内部即子块的状态
+// p 属性的状态，这个状态用来帮助找到属性的值
+%x s c b sb p
 
 // 不需要 \r 了，解析前已经做了替换
 n                           \n+
@@ -36,59 +37,59 @@ comment                     ^(\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?|\/\/[\s\S]*)
 
 /* lexical grammar */
 
-// <b>\-*[_a-zA-Z$]+       {return 'TEST1'}
-// <b>([0-9]+(\.[0-9]+)?)|(\.[0-9]+) {return 'TEST2'}
+// <s>\-*[_a-zA-Z$]+       {return 'TEST1'}
+// <s>([0-9]+(\.[0-9]+)?)|(\.[0-9]+) {return 'TEST2'}
 
 // 注释先忽略
-<b>{comment}
+<s>{comment}
     {
         this.begin('c');
     }
 ;
 
-<b,block,sub_block,property>{n}
+<s,b,sb,p>{n}
     {
         // console.log(this, '11');
         return 'N';
     }
 ;
 
-<b,block,sub_block,property>{s}
+<s,b,sb,p>{s}
     {
         // console.log(this, '11');
         return 'S';
     }
 ;
 
-<b,block,sub_block,property>{colon}
+<s,b,sb,p>{colon}
     {
         return 'COLON';
     }
 ;
 
-<b,block,sub_block,property>{semicolon}
+<s,b,sb,p>{semicolon}
     {
         return 'SEMICOLON';
     }
 ;
 
-<b,block,sub_block>'{'
+<s,b,sb>'{'
     {
-        if (this.topState() === 'block') {
-            this.begin('sub_block');
+        if (this.topState() === 'b') {
+            this.begin('sb');
         }
         else {
-            this.begin('block');
+            this.begin('b');
         }
         // console.warn(this.topState(), 'rrr');
         return 'BRACE_BEGIN';
     }
 ;
 
-<block,sub_block>'}'
+<b,sb>'}'
     {
-        // if (this.topState() === 'sub_block') {
-        //     this.begin('block');
+        // if (this.topState() === 'sb') {
+        //     this.begin('b');
         // }
         // else {
             this.popState();
@@ -97,15 +98,15 @@ comment                     ^(\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?|\/\/[\s\S]*)
     }
 ;
 
-<block,sub_block>{ident}\s*/{colon}
+<b,sb>{ident}\s*/{colon}∑
     {
-        this.begin('property');
-        // console.log(yytext, this.topState(), 'property');
+        this.begin('p');
+        // console.log(yytext, this.topState(), 'p');
         return 'PROPERTY';
     }
 ;
 
-<property>{ident}
+<p>{ident}
     {
         this.popState();
         // console.log(yytext, this.topState(), 'ssss');
@@ -113,7 +114,7 @@ comment                     ^(\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?|\/\/[\s\S]*)
     }
 ;
 
-<b,block,sub_block>{ident}
+<s,b,sb>{ident}
     {
         return 'IDENT';
     }
@@ -125,7 +126,7 @@ comment                     ^(\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?|\/\/[\s\S]*)
     }
 ;
 
-<b,c><<EOF>>
+<s,c><<EOF>>
     {
         this.popState();
         return 'EOF';
@@ -134,7 +135,7 @@ comment                     ^(\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?|\/\/[\s\S]*)
 
 <INITIAL>
     {
-        this.begin('b');
+        this.begin('s');
     }
 ;
 

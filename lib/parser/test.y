@@ -88,10 +88,25 @@ selector
     ;
 
 prop_value
-    : PROPERTY COLON S VALUE SEMICOLON
+    : S PROPERTY COLON S VALUE SEMICOLON
+        {
+            $$ = $2 + '_' + $5;
+            debug('prop_value', 'S PROPERTY COLON S VALUE SEMICOLON');
+        }
+    | PROPERTY COLON S VALUE SEMICOLON
         {
             $$ = $1 + '_' + $4;
             debug('prop_value', 'PROPERTY COLON S VALUE SEMICOLON');
+        }
+    | S PROPERTY COLON VALUE SEMICOLON
+        {
+            $$ = $2 + '_' + $4;
+            debug('prop_value', 'S PROPERTY COLON VALUE SEMICOLON');
+        }
+    | PROPERTY COLON VALUE SEMICOLON
+        {
+            $$ = $1 + '_' + $3;
+            debug('prop_value', 'PROPERTY COLON VALUE SEMICOLON');
         }
     ;
 
@@ -120,19 +135,19 @@ line
             debug('line', 'line S selector');
         }
 
-    | S prop_value
+    | prop_value
+        {
+            $$ = $1;
+            console.warn($$);
+            console.warn('属性');
+            debug('line', 'prop_value');
+        }
+    | line prop_value
         {
             $$ = $2;
             console.warn($$);
             console.warn('属性');
-            debug('line', 'S prop_value');
-        }
-    | line S prop_value
-        {
-            $$ = $3;
-            console.warn($$);
-            console.warn('属性');
-            debug('line', 'line S prop_value');
+            debug('line', 'line prop_value');
         }
 
     | BRACE_END
