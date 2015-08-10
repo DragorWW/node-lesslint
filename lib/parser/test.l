@@ -28,7 +28,8 @@ semicolon                   \;+
 selector                    {ident}[ \t\s]*\{\n*
 
 /*comment                     ^(\/\*(?:[^*]|\*+[^\])*\*+\/\n?|\/\/[\s\S]*)*/
-singlecomment               ^(\/\/.*[^\n])
+// singlecomment               ^(\/\/.*[^\n])
+singlecomment               ^(\/\/.*)
 
 
 // %options flex case-insensitive

@@ -52,41 +52,6 @@ lines
         }
     ;
 
-selector
-    : IDENT BRACE_BEGIN
-        {
-            debug('selector', 'IDENT BRACE_BEGIN');
-        }
-    | IDENT S BRACE_BEGIN
-        {
-            debug('selector', 'IDENT S BRACE_BEGIN');
-        }
-    ;
-
-prop_value
-    : S PROPERTY COLON S VALUE semicolon_or_empty
-        {
-            $$ = $2 + '_' + $5;
-            debug('prop_value', 'S PROPERTY COLON S VALUE semicolon_or_empty');
-        }
-    | PROPERTY COLON S VALUE semicolon_or_empty
-        {
-            $$ = $1 + '_' + $4;
-            debug('prop_value', 'PROPERTY COLON S VALUE semicolon_or_empty');
-        }
-    | S PROPERTY COLON VALUE semicolon_or_empty
-        {
-            $$ = $2 + '_' + $4;
-            debug('prop_value', 'S PROPERTY COLON VALUE semicolon_or_empty');
-        }
-    | PROPERTY COLON VALUE semicolon_or_empty
-        {
-            console.warn($4, 'sds');
-            $$ = $1 + '_' + $3;
-            debug('prop_value', 'PROPERTY COLON VALUE semicolon_or_empty');
-        }
-    ;
-
 line
     : selector
         {
@@ -145,6 +110,42 @@ line
             debug('line', 'line S BRACE_END');
         }
     ;
+
+selector
+    : IDENT BRACE_BEGIN
+        {
+            debug('selector', 'IDENT BRACE_BEGIN');
+        }
+    | IDENT S BRACE_BEGIN
+        {
+            debug('selector', 'IDENT S BRACE_BEGIN');
+        }
+    ;
+
+prop_value
+    : S PROPERTY COLON S VALUE semicolon_or_empty
+        {
+            $$ = $2 + '_' + $5;
+            debug('prop_value', 'S PROPERTY COLON S VALUE semicolon_or_empty');
+        }
+    | PROPERTY COLON S VALUE semicolon_or_empty
+        {
+            $$ = $1 + '_' + $4;
+            debug('prop_value', 'PROPERTY COLON S VALUE semicolon_or_empty');
+        }
+    | S PROPERTY COLON VALUE semicolon_or_empty
+        {
+            $$ = $2 + '_' + $4;
+            debug('prop_value', 'S PROPERTY COLON VALUE semicolon_or_empty');
+        }
+    | PROPERTY COLON VALUE semicolon_or_empty
+        {
+            console.warn($4, 'sds');
+            $$ = $1 + '_' + $3;
+            debug('prop_value', 'PROPERTY COLON VALUE semicolon_or_empty');
+        }
+    ;
+
 
 // SEMICOLON*
 semicolon_or_empty
