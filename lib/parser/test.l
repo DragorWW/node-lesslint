@@ -7,11 +7,11 @@
 // 如果是包容性的状态，那么没有状态的规则也会被激活；如果是非包容的，那么只有声明了相应状态的规则才会被激活。
 
 // s 开始状态
-// c 注释的状态
+// sc 单行注释的状态
 // b 选择器内部即块的状态
 // sb 选择器内部子选择器内部即子块的状态
 // p 属性的状态，这个状态用来帮助找到属性的值
-%x s c b sb p
+%x s sc b sb p
 
 // 不需要 \r 了，解析前已经做了替换
 n                           \n+
@@ -27,7 +27,8 @@ semicolon                   \;+
 
 selector                    {ident}[ \t\s]*\{\n*
 
-comment                     ^(\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?|\/\/[\s\S]*)
+/*comment                     ^(\/\*(?:[^*]|\*+[^\])*\*+\/\n?|\/\/[\s\S]*)*/
+singlecomment               ^(\/\/.*[^\n])
 
 
 // %options flex case-insensitive
@@ -35,15 +36,23 @@ comment                     ^(\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?|\/\/[\s\S]*)
 
 %%
 
-/* lexical grammar */
+// lexical grammar
 
 // <s>\-*[_a-zA-Z$]+       {return 'TEST1'}
 // <s>([0-9]+(\.[0-9]+)?)|(\.[0-9]+) {return 'TEST2'}
 
 // 注释先忽略
-<s>{comment}
+<s>{singlecomment}
     {
-        this.begin('c');
+        // console.warn(yytext, 123123);
+        this.begin('sc');
+    }
+;
+
+<sc>{n}
+    {
+        // console.warn(112312321);
+        this.popState();
     }
 ;
 
@@ -126,7 +135,7 @@ comment                     ^(\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?|\/\/[\s\S]*)
     }
 ;
 
-<s,c><<EOF>>
+<s,sc><<EOF>>
     {
         this.popState();
         return 'EOF';

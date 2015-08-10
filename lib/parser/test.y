@@ -18,33 +18,9 @@
 
 /* operator associations and precedence */
 
-
-// %nonassoc nodes
-// %nonassoc node
-// %nonassoc selector block
-// %nonassoc kvs
-// %nonassoc kv
-// %nonassoc k v
+// %nonassoc selector
 // %nonassoc IDENT
-// %nonassoc n_or_empty
-// %nonassoc N
-
-// %nonassoc space_or_empty
-// %nonassoc at_least_one_space
-// %nonassoc S
-// %nonassoc empty
-
-
-// %nonassoc nodes
-// %nonassoc node
-// %nonassoc block
-// %nonassoc kvs
-// %nonassoc kv
-// %nonassoc IDENT
-
-%nonassoc selector
-%nonassoc IDENT
-%nonassoc S N BRACE_BEGIN
+// %nonassoc S N BRACE_BEGIN BRACE_END
 
 
 %start root
