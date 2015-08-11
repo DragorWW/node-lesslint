@@ -39,16 +39,17 @@
 // %nonassoc IDENT
 // %nonassoc S N BRACE_BEGIN BRACE_END
 // %nonassoc PROPERTY VALUE
-// // %nonassoc IDENT
+// %nonassoc IDENT
 // %nonassoc S N BRACE_BEGIN BRACE_END
-// %nonassoc semicolon_or_empty
 
 // %nonassoc SEMICOLON
 // %nonassoc S
 // %nonassoc empty
 
+// %nonassoc value
 // %nonassoc VALUE
-// %nonassoc S N
+// %nonassoc S
+// %nonassoc N
 // %nonassoc SEMICOLON
 
 %start root
@@ -101,8 +102,18 @@ line
         }
     | line selector
         {
-            // $$ = $2;
-            // curSelector = $$;
+            $$ = $2;
+
+            if (!curSelector) {
+                ast.selectors.push($$);
+                console.warn('选择器');
+            }
+            else {
+                $$.parent = curSelector;
+                curSelector.children.push($$);
+                console.warn('子选择器');
+            }
+            curSelector = $$;
             debug('line', 'line selector');
         }
 
@@ -144,42 +155,50 @@ line
     | line prop_value
         {
             $$ = $2;
-            // console.warn($$);
             console.warn('属性 line');
             debug('line', 'line prop_value');
         }
 
     | BRACE_END
         {
-            curSelector.isEnd = true;
+            if (curSelector) {
+                curSelector.isEnd = true;
 
-            // curSelector.parent 如果是 null，那么 curSelector 就是 null
-            curSelector = curSelector.parent;
+                // curSelector.parent 如果是 null，那么 curSelector 就是 null
+                curSelector = curSelector.parent;
+            }
             debug('line', 'BRACE_END');
         }
     | line BRACE_END
         {
-            curSelector.isEnd = true;
+            // console.warn(curSelector);
+            if (curSelector) {
+                curSelector.isEnd = true;
 
-            // curSelector.parent 如果是 null，那么 curSelector 就是 null
-            curSelector = curSelector.parent;
+                // curSelector.parent 如果是 null，那么 curSelector 就是 null
+                curSelector = curSelector.parent;
+            }
             debug('line', 'line BRACE_END');
         }
 
     | S BRACE_END
         {
-            curSelector.isEnd = true;
+            if (curSelector) {
+                curSelector.isEnd = true;
 
-            // curSelector.parent 如果是 null，那么 curSelector 就是 null
-            curSelector = curSelector.parent;
+                // curSelector.parent 如果是 null，那么 curSelector 就是 null
+                curSelector = curSelector.parent;
+            }
             debug('line', 'S BRACE_END');
         }
     | line S BRACE_END
         {
-            curSelector.isEnd = true;
+            if (curSelector) {
+                curSelector.isEnd = true;
 
-            // curSelector.parent 如果是 null，那么 curSelector 就是 null
-            curSelector = curSelector.parent;
+                // curSelector.parent 如果是 null，那么 curSelector 就是 null
+                curSelector = curSelector.parent;
+            }
             debug('line', 'line S BRACE_END');
         }
     ;
@@ -230,16 +249,25 @@ selector
 prop
     : PROPERTY
         {
-            $$ = $1;
+            $$ = {
+                val: $1,
+                before: '',
+                after: ''
+            };
             debug('prop', 'PROPERTY');
         }
     | S PROPERTY
         {
-            $$ = $2;
+            $$ = {
+                val: $2,
+                before: $1,
+                after: ''
+            };
             debug('prop', 'S PROPERTY');
         }
     | prop S
         {
+            $1.after = $2;
             $$ = $1;
             debug('prop', 'prop S');
         }
@@ -248,30 +276,73 @@ prop
 value
     : VALUE
         {
-            $$ = $1;
+            $$ = {
+                val: $1,
+                before: '',
+                after: ''
+            };
             debug('value', 'VALUE');
         }
     | S VALUE
         {
-            $$ = $2;
+            $$ = {
+                val: $2,
+                before: $1,
+                after: ''
+            };
             debug('value', 'S VALUE');
         }
-    | VALUE S
+    | value S
         {
+            $1.after = $2;
             $$ = $1;
-            debug('value', 'VALUE S');
+            debug('value', 'value S');
         }
-    | S VALUE S
-        {
-            $$ = $2;
-            debug('value', 'S VALUE S');
-        }
+    // | value S
+    //     {
+    //         $$ = $2;
+    //         debug('value', 'value S');
+    //     }
     ;
 
 prop_value
     : prop COLON value semicolon_or_empty
         {
-            $$ = $1 + '_' + $4;
+            curSelector.props.push({
+                type: 'prop',
+                prop: $1.val,
+                beforeProp: $1.before,
+                afterProp: $1.after,
+                value: $3.val,
+                beforeValue: $3.before,
+                afterValue: $3.after,
+                loc: {
+                    firstLine: @1.first_line,
+                    lastLine: @1.last_line,
+                    firstCol: @1.first_column + 1,
+                    lastCol: @1.last_column + 1
+                }
+            });
+
+            debug('prop_value', 'prop COLON value semicolon_or_empty');
+        }
+    | prop COLON value BRACE_END
+        {
+            curSelector.props.push({
+                type: 'prop',
+                prop: $1.val,
+                beforeProp: $1.before,
+                afterProp: $1.after,
+                value: $3.val,
+                beforeValue: $3.before,
+                afterValue: $3.after,
+                loc: {
+                    firstLine: @1.first_line,
+                    lastLine: @1.last_line,
+                    firstCol: @1.first_column + 1,
+                    lastCol: @1.last_column + 1
+                }
+            });
             debug('prop_value', 'prop COLON value semicolon_or_empty');
         }
     ;
