@@ -38,7 +38,18 @@
 // %nonassoc selector
 // %nonassoc IDENT
 // %nonassoc S N BRACE_BEGIN BRACE_END
+// %nonassoc PROPERTY VALUE
+// // %nonassoc IDENT
+// %nonassoc S N BRACE_BEGIN BRACE_END
+// %nonassoc semicolon_or_empty
 
+// %nonassoc SEMICOLON
+// %nonassoc S
+// %nonassoc empty
+
+// %nonassoc VALUE
+// %nonassoc S N
+// %nonassoc SEMICOLON
 
 %start root
 %%
@@ -216,31 +227,54 @@ selector
         }
     ;
 
-prop_value
-    : S PROPERTY COLON S VALUE semicolon_or_empty
+prop
+    : PROPERTY
         {
-            $$ = $2 + '_' + $5;
-            // console.warn(curSelector);
-            debug('prop_value', 'S PROPERTY COLON S VALUE semicolon_or_empty');
+            $$ = $1;
+            debug('prop', 'PROPERTY');
         }
-    | PROPERTY COLON S VALUE semicolon_or_empty
+    | S PROPERTY
         {
-            $$ = $1 + '_' + $4;
-            debug('prop_value', 'PROPERTY COLON S VALUE semicolon_or_empty');
+            $$ = $2;
+            debug('prop', 'S PROPERTY');
         }
-    | S PROPERTY COLON VALUE semicolon_or_empty
+    | prop S
         {
-            $$ = $2 + '_' + $4;
-            debug('prop_value', 'S PROPERTY COLON VALUE semicolon_or_empty');
-        }
-    | PROPERTY COLON VALUE semicolon_or_empty
-        {
-            console.warn($4, 'sds');
-            $$ = $1 + '_' + $3;
-            debug('prop_value', 'PROPERTY COLON VALUE semicolon_or_empty');
+            $$ = $1;
+            debug('prop', 'prop S');
         }
     ;
 
+value
+    : VALUE
+        {
+            $$ = $1;
+            debug('value', 'VALUE');
+        }
+    | S VALUE
+        {
+            $$ = $2;
+            debug('value', 'S VALUE');
+        }
+    | VALUE S
+        {
+            $$ = $1;
+            debug('value', 'VALUE S');
+        }
+    | S VALUE S
+        {
+            $$ = $2;
+            debug('value', 'S VALUE S');
+        }
+    ;
+
+prop_value
+    : prop COLON value semicolon_or_empty
+        {
+            $$ = $1 + '_' + $4;
+            debug('prop_value', 'prop COLON value semicolon_or_empty');
+        }
+    ;
 
 // SEMICOLON*
 semicolon_or_empty
@@ -248,18 +282,19 @@ semicolon_or_empty
         {
             debug('semicolon_or_empty', 'SEMICOLON');
         }
-    | empty
+    | N
+        {
+            debug('semicolon_or_empty', 'empty');
+        }
+    // | S
+    //     {
+    //         debug('semicolon_or_empty', 'empty');
+    //     }
+    | ''
         {
             debug('semicolon_or_empty', 'empty');
         }
     ;
-
-empty
-    : -> ''
-    ;
-
-
-
 
 // N*
 // n_or_empty

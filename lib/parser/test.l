@@ -21,7 +21,11 @@ unicode                     \\{h}{1,6}(\r\n|[ \t\r\n\f])?
 escape                      {unicode}|\\[^\r\n\f0-9a-fA-F]
 nmstart                     [_a-zA-Z]|{nonascii}|{escape}
 nmchar                      [_a-zA-Z0-9\-]|{nonascii}|{escape}
+
 ident                       [\-]?{nmstart}{nmchar}*
+// ident           \-*[_a-zA-Z$][-\w\d$]+
+// ident           \-*[_a-zA-Z0-9$]+
+
 colon                       \:+
 semicolon                   \;+
 
@@ -108,8 +112,10 @@ singlecomment               ^(\/\/.*)
     }
 ;
 
-<b,sb>{ident}\s*/{colon}∑
+// <b,sb>{ident}\s*/{colon}
+<b,sb>{ident}/(\s*{colon})
     {
+        // console.log(yytext, this.topState(), 'p');
         this.begin('p');
         // console.log(yytext, this.topState(), 'p');
         return 'PROPERTY';
@@ -117,9 +123,10 @@ singlecomment               ^(\/\/.*)
 ;
 
 <p>{ident}
+// <p>{ident}/(\s*\;*)
     {
         this.popState();
-        // console.log(yytext, this.topState(), 'ssss');
+        // console.log(yytext + '--', this.topState(), 'sss');
         return 'VALUE';
     }
 ;
