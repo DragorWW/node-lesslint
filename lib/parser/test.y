@@ -5,7 +5,7 @@
     var variables = [];
     var ast = {
         variables: [],
-        nodes: [],
+        imports: [],
         selectors: []
     };
 
@@ -58,12 +58,14 @@
 root
     : lines EOF
         {
+            ast.imports = yy.imports;
             return {
                 root: ast
             };
         }
     | EOF
         {
+            ast.imports = yy.imports || [];
             return {
                 root: ast
             };
@@ -186,6 +188,11 @@ line
             }
             debug('line', 'line S BRACE_END');
         }
+
+    // | IMPORT_CONTENT
+    //     {
+    //         console.warn($1);
+    //     }
     ;
 
 selector

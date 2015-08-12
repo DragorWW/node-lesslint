@@ -98,10 +98,43 @@ quote                       ['"]
     }
 ;
 
-// TODO: import 的单引双引号
 <im>[^;]+
     {
-        console.warn(yytext, 12312);
+        /(['"])([\s\S]*)\1/.test(yytext);
+        var content = RegExp.$2;
+        var quote = RegExp.$1;
+
+        /^(\s*)/.test(yytext);
+        var before = RegExp.$1;
+
+        /(\s*)$/.test(yytext);
+        var after = RegExp.$1;
+
+        if (!yy.imports) {
+            yy.imports = [];
+        }
+
+        // 这里把 @import (less) 'aaa'; 里面的 (less) 暂时省略了
+        yy.imports.push({
+            type: 'import',
+            content: content,
+            quote: quote,
+            before: before,
+            after: after,
+            loc: {
+                firstLine: yylloc.first_line,
+                lastLine: yylloc.last_line,
+                firstCol: yylloc.first_column + 1,
+                lastCol: yylloc.last_column + 1
+            }
+        });
+
+        // yy.imports.push({
+            // content:
+        // });
+        // yy.imports.push(Date.now());
+        // return 'IMPORT_CONTENT';
+        // console.warn(lexer);
     }
 ;
 
