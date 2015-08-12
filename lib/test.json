@@ -1,0 +1,105 @@
+{
+    "root": {
+        "variables": [],
+        "nodes": [],
+        "selectors": [
+            {
+                "type": "selector",
+                "value": "qqqq",
+                "before": "",
+                "after": "",
+                "parent": null,
+                "isEnd": false,
+                "loc": {
+                    "firstLine": 2,
+                    "lastLine": 2,
+                    "firstCol": 1,
+                    "lastCol": 5
+                },
+                "props": [
+                    {
+                        "type": "prop",
+                        "prop": "qqq-111",
+                        "beforeProp": "",
+                        "afterProp": "",
+                        "value": "b",
+                        "beforeValue": "",
+                        "afterValue": "",
+                        "loc": {
+                            "firstLine": 2,
+                            "lastLine": 2,
+                            "firstCol": 6,
+                            "lastCol": 13
+                        }
+                    }
+                ],
+                "children": [
+                    {
+                        "type": "selector",
+                        "value": "cc",
+                        "before": "",
+                        "after": "",
+                        "parent": "[Circular ~.root.selectors.0]",
+                        "isEnd": true,
+                        "loc": {
+                            "firstLine": 2,
+                            "lastLine": 2,
+                            "firstCol": 16,
+                            "lastCol": 18
+                        },
+                        "props": [
+                            {
+                                "type": "prop",
+                                "prop": "e",
+                                "beforeProp": "",
+                                "afterProp": "",
+                                "value": "f",
+                                "beforeValue": "",
+                                "afterValue": "",
+                                "loc": {
+                                    "firstLine": 2,
+                                    "lastLine": 2,
+                                    "firstCol": 19,
+                                    "lastCol": 20
+                                }
+                            }
+                        ],
+                        "children": []
+                    },
+                    {
+                        "type": "selector",
+                        "value": "cc",
+                        "before": "",
+                        "after": " ",
+                        "parent": "[Circular ~.root.selectors.0]",
+                        "isEnd": true,
+                        "loc": {
+                            "firstLine": 4,
+                            "lastLine": 4,
+                            "firstCol": 1,
+                            "lastCol": 3
+                        },
+                        "props": [
+                            {
+                                "type": "prop",
+                                "prop": "a",
+                                "beforeProp": "    ",
+                                "afterProp": "",
+                                "value": "red",
+                                "beforeValue": " ",
+                                "afterValue": "",
+                                "loc": {
+                                    "firstLine": 5,
+                                    "lastLine": 5,
+                                    "firstCol": 1,
+                                    "lastCol": 6
+                                }
+                            }
+                        ],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

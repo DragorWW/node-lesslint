@@ -64,7 +64,6 @@ root
         }
     | EOF
         {
-            console.warn(2222);
             return {
                 root: ast
             };
@@ -89,12 +88,12 @@ line
 
             if (!curSelector) {
                 ast.selectors.push($$);
-                console.warn('选择器');
+                debug('选择器');
             }
             else {
                 $$.parent = curSelector;
                 curSelector.children.push($$);
-                console.warn('子选择器');
+                debug('子选择器');
             }
             curSelector = $$;
 

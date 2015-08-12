@@ -8,10 +8,11 @@
 
 // s 开始状态
 // sc 单行注释的状态
+// mc 多行注释的状态
 // b 选择器内部即块的状态
 // sb 选择器内部子选择器内部即子块的状态
 // p 属性的状态，这个状态用来帮助找到属性的值
-%x s sc b sb p
+%x s sc mc b sb p
 
 // 不需要 \r 了，解析前已经做了替换
 n                           \n+
@@ -34,6 +35,10 @@ selector                    {ident}[ \t\s]*\{\n*
 /*comment                     ^(\/\*(?:[^*]|\*+[^\])*\*+\/\n?|\/\/[\s\S]*)*/
 // singlecomment               ^(\/\/.*[^\n])
 singlecomment               ^(\/\/.*)
+// multicomment                ^\/\*[^*]*\*+([^\][^*]*\*+)*\/
+// multicommentstart           ^(\/\*[\s\S]+)
+multicommentstart           ^(\/\*)
+multicommentend             ([^\][^*]*\*+)*\/\n*
 
 
 // %options flex case-insensitive
@@ -41,16 +46,29 @@ singlecomment               ^(\/\/.*)
 
 %%
 
-// lexical grammar
+/* lexical grammar */
 
 // <s>\-*[_a-zA-Z$]+       {return 'TEST1'}
 // <s>([0-9]+(\.[0-9]+)?)|(\.[0-9]+) {return 'TEST2'}
 
-// 注释先忽略
 <s>{singlecomment}
     {
         // console.warn(yytext, 123123);
         this.begin('sc');
+    }
+;
+
+<s>{multicommentstart}
+    {
+        console.warn(yytext, 'mc-start');
+        this.begin('mc');
+    }
+;
+
+<mc>{multicommentend}
+    {
+        console.warn(yytext, 'mc-end');
+        this.popState();
     }
 ;
 
@@ -153,7 +171,7 @@ singlecomment               ^(\/\/.*)
     }
 ;
 
-<s,sc><<EOF>>
+<s,sc,mc><<EOF>>
     {
         this.popState();
         return 'EOF';
