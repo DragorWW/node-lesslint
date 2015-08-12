@@ -128,24 +128,14 @@ quote                       ['"]
                 lastCol: yylloc.last_column + 1
             }
         });
-
-        // yy.imports.push({
-            // content:
-        // });
-        // yy.imports.push(Date.now());
-        // return 'IMPORT_CONTENT';
-        // console.warn(lexer);
     }
 ;
 
 <im>{semicolon}\n*
     {
-        // console.warn(2);
         this.popState();
-        // console.warn(this.topState());
     }
 ;
-
 
 // // <im>{all}*(quote)?{all}*\1?[^;]
 // <im>[^;]+(quote)+[^;]+\1[^;]*

@@ -188,11 +188,6 @@ line
             }
             debug('line', 'line S BRACE_END');
         }
-
-    // | IMPORT_CONTENT
-    //     {
-    //         console.warn($1);
-    //     }
     ;
 
 selector
