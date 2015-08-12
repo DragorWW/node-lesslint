@@ -11,8 +11,8 @@
                 "parent": null,
                 "isEnd": true,
                 "loc": {
-                    "firstLine": 3,
-                    "lastLine": 3,
+                    "firstLine": 6,
+                    "lastLine": 6,
                     "firstCol": 1,
                     "lastCol": 3
                 },
@@ -26,8 +26,8 @@
                         "beforeValue": " ",
                         "afterValue": "",
                         "loc": {
-                            "firstLine": 4,
-                            "lastLine": 4,
+                            "firstLine": 7,
+                            "lastLine": 7,
                             "firstCol": 1,
                             "lastCol": 6
                         }

@@ -7,12 +7,13 @@
 // 如果是包容性的状态，那么没有状态的规则也会被激活；如果是非包容的，那么只有声明了相应状态的规则才会被激活。
 
 // s 开始状态
-// sc 单行注释的状态
-// mc 多行注释的状态
-// b 选择器内部即块的状态
-// sb 选择器内部子选择器内部即子块的状态
-// p 属性的状态，这个状态用来帮助找到属性的值
-%x s sc mc b sb p
+// sc 进入单行注释的状态
+// mc 进入多行注释的状态
+// b 进入选择器内部即块的状态
+// sb 进入选择器内部子选择器内部即子块的状态
+// p 进入属性的状态，这个状态用来帮助找到属性的值
+// im 进入 @import 语句后的状态
+%x s sc mc b sb p im
 
 // 不需要 \r 了，解析前已经做了替换
 n                           \n+
@@ -24,11 +25,13 @@ nmstart                     [_a-zA-Z]|{nonascii}|{escape}
 nmchar                      [_a-zA-Z0-9\-]|{nonascii}|{escape}
 
 ident                       [\-]?{nmstart}{nmchar}*
-// ident           \-*[_a-zA-Z$][-\w\d$]+
-// ident           \-*[_a-zA-Z0-9$]+
+// ident                    \-*[_a-zA-Z$][-\w\d$]+
+// ident                    \-*[_a-zA-Z0-9$]+
 
 colon                       \:+
 semicolon                   \;+
+
+all                         [\s\S]
 
 selector                    {ident}[ \t\s]*\{\n*
 
@@ -39,6 +42,14 @@ singlecomment               ^(\/\/.*)
 // multicommentstart           ^(\/\*[\s\S]+)
 multicommentstart           ^(\/\*)
 multicommentend             ([^\][^*]*\*+)*\/\n*
+
+// import                      ^'@'import
+import                      ^\s*'@import'
+
+quote                       ['"]
+
+
+/*"'*/ // 这个注释是为了把 quote 的正则所带来的高亮影响给去掉
 
 
 // %options flex case-insensitive
@@ -78,6 +89,38 @@ multicommentend             ([^\][^*]*\*+)*\/\n*
         this.popState();
     }
 ;
+
+<s>{import}
+    {
+        // console.warn(yytext, 'sss');
+        // console.warn('enter im');
+        this.begin('im');
+    }
+;
+
+// TODO: import 的单引双引号
+<im>[^;]+
+    {
+        console.warn(yytext, 12312);
+    }
+;
+
+<im>{semicolon}\n*
+    {
+        // console.warn(2);
+        this.popState();
+        // console.warn(this.topState());
+    }
+;
+
+
+// // <im>{all}*(quote)?{all}*\1?[^;]
+// <im>[^;]+(quote)+[^;]+\1[^;]*
+//     {
+//         console.warn(yytext);
+//         console.warn(1);
+//     }
+// ;
 
 <s,b,sb,p>{n}
     {
