@@ -122,9 +122,19 @@ singlecomment               ^(\/\/.*)
     }
 ;
 
-<p>{ident}
-// <p>{ident}/(\s*\;*)
+// 匹配属性值中带有空格的情况
+<p>{ident}\s+{ident}
     {
+        console.warn(yytext);
+        this.popState();
+        // console.log(yytext + '--', this.topState(), 'sss');
+        return 'VALUE';
+    }
+;
+
+<p>{ident}
+    {
+        console.warn(yytext);
         this.popState();
         // console.log(yytext + '--', this.topState(), 'sss');
         return 'VALUE';
