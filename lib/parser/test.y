@@ -88,12 +88,12 @@ line
 
             if (!curSelector) {
                 ast.selectors.push($$);
-                debug('选择器');
             }
             else {
-                $$.parent = curSelector;
-                curSelector.children.push($$);
-                debug('子选择器');
+                if (!curSelector.isEnd) {
+                    $$.parent = curSelector;
+                    curSelector.children.push($$);
+                }
             }
             curSelector = $$;
 
@@ -105,12 +105,12 @@ line
 
             if (!curSelector) {
                 ast.selectors.push($$);
-                console.warn('选择器');
             }
             else {
-                $$.parent = curSelector;
-                curSelector.children.push($$);
-                console.warn('子选择器');
+                if (!curSelector.isEnd) {
+                    $$.parent = curSelector;
+                    curSelector.children.push($$);
+                }
             }
             curSelector = $$;
             debug('line', 'line selector');
@@ -123,21 +123,18 @@ line
 
             if (!curSelector) {
                 ast.selectors.push($$);
-                console.warn('选择器');
             }
             else {
-                $$.parent = curSelector;
-                curSelector.children.push($$);
-                console.warn('子选择器');
+                if (!curSelector.isEnd) {
+                    $$.parent = curSelector;
+                    curSelector.children.push($$);
+                }
             }
             curSelector = $$;
             debug('line', 'S selector');
         }
     | line S selector
         {
-            // $3.before = $2;
-            // $$ = $3;
-            // curSelector = $$;
             debug('line', 'line S selector');
         }
 
@@ -170,7 +167,6 @@ line
         }
     | line BRACE_END
         {
-            // console.warn(curSelector);
             if (curSelector) {
                 curSelector.isEnd = true;
 
@@ -297,11 +293,6 @@ value
             $$ = $1;
             debug('value', 'value S');
         }
-    // | value S
-    //     {
-    //         $$ = $2;
-    //         debug('value', 'value S');
-    //     }
     ;
 
 prop_value
@@ -342,7 +333,9 @@ prop_value
                     lastCol: @1.last_column + 1
                 }
             });
-            debug('prop_value', 'prop COLON value semicolon_or_empty');
+            curSelector.isEnd = true;
+            curSelector = curSelector.parent;
+            debug('prop_value', 'prop COLON value BRACE_END');
         }
     ;
 
@@ -354,8 +347,12 @@ semicolon_or_empty
         }
     | N
         {
-            debug('semicolon_or_empty', 'empty');
+            debug('semicolon_or_empty', 'N');
         }
+    // | semicolon_or_empty N
+    //     {
+    //         debug('semicolon_or_empty', 'SEMICOLON N');
+    //     }
     // | S
     //     {
     //         debug('semicolon_or_empty', 'empty');

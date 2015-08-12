@@ -60,14 +60,14 @@ multicommentend             ([^\][^*]*\*+)*\/\n*
 
 <s>{multicommentstart}
     {
-        console.warn(yytext, 'mc-start');
+        // console.warn(yytext, 'mc-start');
         this.begin('mc');
     }
 ;
 
 <mc>{multicommentend}
     {
-        console.warn(yytext, 'mc-end');
+        // console.warn(yytext, 'mc-end');
         this.popState();
     }
 ;
@@ -143,7 +143,7 @@ multicommentend             ([^\][^*]*\*+)*\/\n*
 // 匹配属性值中带有空格的情况
 <p>{ident}\s+{ident}
     {
-        console.warn(yytext);
+        // console.warn(yytext);
         this.popState();
         // console.log(yytext + '--', this.topState(), 'sss');
         return 'VALUE';
@@ -152,7 +152,7 @@ multicommentend             ([^\][^*]*\*+)*\/\n*
 
 <p>{ident}
     {
-        console.warn(yytext);
+        // console.warn(yytext);
         this.popState();
         // console.log(yytext + '--', this.topState(), 'sss');
         return 'VALUE';
