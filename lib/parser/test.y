@@ -141,17 +141,11 @@ line
     | prop_value
         {
             $$ = $1;
-            // curSelector.props.push({
-
-            // });
-            // console.warn($$);
-            console.warn('属性');
             debug('line', 'prop_value');
         }
     | line prop_value
         {
             $$ = $2;
-            console.warn('属性 line');
             debug('line', 'line prop_value');
         }
 
@@ -159,7 +153,6 @@ line
         {
             if (curSelector) {
                 curSelector.isEnd = true;
-
                 // curSelector.parent 如果是 null，那么 curSelector 就是 null
                 curSelector = curSelector.parent;
             }
@@ -169,7 +162,6 @@ line
         {
             if (curSelector) {
                 curSelector.isEnd = true;
-
                 // curSelector.parent 如果是 null，那么 curSelector 就是 null
                 curSelector = curSelector.parent;
             }
@@ -180,7 +172,6 @@ line
         {
             if (curSelector) {
                 curSelector.isEnd = true;
-
                 // curSelector.parent 如果是 null，那么 curSelector 就是 null
                 curSelector = curSelector.parent;
             }
@@ -190,7 +181,6 @@ line
         {
             if (curSelector) {
                 curSelector.isEnd = true;
-
                 // curSelector.parent 如果是 null，那么 curSelector 就是 null
                 curSelector = curSelector.parent;
             }
@@ -207,7 +197,7 @@ selector
                 before: '',
                 after: '',
                 parent: null,
-                isEnd: false,    // 选择器是否结束即是否遇到了 BRACE_END 符号，用于确定下一个选择器是子选择器还是兄弟选择器
+                isEnd: false,   // 选择器是否结束即是否遇到了 BRACE_END 符号，用于确定下一个选择器是子选择器还是兄弟选择器
                 loc: {
                     firstLine: @1.first_line,
                     lastLine: @1.last_line,
@@ -227,7 +217,7 @@ selector
                 before: '',
                 after: $2,
                 parent: null,
-                isEnd: false,    // 选择器是否结束即是否遇到了 BRACE_END 符号，用于确定下一个选择器是子选择器还是兄弟选择器
+                isEnd: false,   // 选择器是否结束即是否遇到了 BRACE_END 符号，用于确定下一个选择器是子选择器还是兄弟选择器
                 loc: {
                     firstLine: @1.first_line,
                     lastLine: @1.last_line,
@@ -349,18 +339,14 @@ semicolon_or_empty
         {
             debug('semicolon_or_empty', 'N');
         }
-    // | semicolon_or_empty N
-    //     {
-    //         debug('semicolon_or_empty', 'SEMICOLON N');
-    //     }
-    // | S
-    //     {
-    //         debug('semicolon_or_empty', 'empty');
-    //     }
     | ''
         {
             debug('semicolon_or_empty', 'empty');
         }
+    // | S
+    //     {
+    //         debug('semicolon_or_empty', 'empty');
+    //     }
     ;
 
 // N*

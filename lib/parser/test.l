@@ -184,26 +184,5 @@ multicommentend             ([^\][^*]*\*+)*\/\n*
     }
 ;
 
-// {number}                    { return 'NUMBER'; }
-// {string}                    { return 'STRING'; }
-// {ident}                     {/*console.warn(lexer.reject(), 1);*/ return 'IDENT'; }
-// {nl}                        { /*console.log(this, '11');*/ return 'NL'; }
-// <semi>{nl}                  { return 'NL1'; }
-// {semicolonAndNL}            { return 'SEMICOLONANDNL'; }
-// {space}                     {return 'SPACE'; }
-// {tab}                     { return 'TAB'; }
-// {dot}                       { return 'DOT'; }
-// {colon}                     { return 'COLON'; }
-// {semicolon}                 { return 'SEMICOLON'; }
-
-// // // {space}/{comment}           ; // {console.warn(yytext, yytext.length); console.warn(111);}
-// // // {nl}/{comment}              ; // {console.warn(yytext, yytext.length); console.warn(111);}
-// // {nlAndComment}                   {console.log(this, 'sdsds');return 'COMMENT'};
-// {comment}                   ;//{console.log(yy.lexer.next()); console.warn(yy);};
-
-// // {indent}                    { return 'INDENT'; }
-// // .                           { return yytext; }
-// <INITIAL><<EOF>>            { return 'EOF'; }
-
 %%
 
