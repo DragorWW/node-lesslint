@@ -19,6 +19,7 @@
     "fecs": "*",
     "istanbul": "^0.3.2",
     "jasmine-node": "^1.14.5",
+    "jison": "^0.4.15",
     "json-stringify-safe": "^5.0.1",
     "q": "^1.1.2"
   },
@@ -26,7 +27,8 @@
     "lint": "fecs lib test/**/*.spec.js --type=js",
     "coverage": "istanbul cover jasmine-node --captureExceptions test/**/*.spec.js",
     "test": "npm run lint && npm run coverage",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "start": "jison lib/parser/index.y lib/parser/index.l -o lib/parser/index.js && node lib/test.js"
   },
   "main": "./lib/checker.js",
   "bin": {

@@ -13,7 +13,8 @@
 // sb 进入选择器内部子选择器内部即子块的状态
 // p 进入属性的状态，这个状态用来帮助找到属性的值
 // im 进入 @import 语句后的状态
-%x s sc mc b sb p im
+// ch 进入 @charset 语句后的状态
+%x s sc mc b sb p im ch
 
 // 不需要 \r 了，解析前已经做了替换
 n                           \n+
@@ -34,6 +35,7 @@ semicolon                   \;+
 all                         [\s\S]
 
 selector                    {ident}[ \t\s]*\{\n*
+// [\-]?[_a-zA-Z]|[\240-\377]|\\{h}{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-fA-F][_a-zA-Z0-9\-]|{[\240-\377]}|{\\{h}{1,6}(\r\n|[ \t\r\n\f])?}|\\[^\r\n\f0-9a-fA-F]*[ \t\s]*\{\n*
 
 /*comment                     ^(\/\*(?:[^*]|\*+[^\])*\*+\/\n?|\/\/[\s\S]*)*/
 // singlecomment               ^(\/\/.*[^\n])
@@ -43,8 +45,8 @@ singlecomment               ^(\/\/.*)
 multicommentstart           ^(\/\*)
 multicommentend             ([^\][^*]*\*+)*\/\n*
 
-// import                      ^'@'import
 import                      ^\s*'@import'
+charset                     ^\s*'@charset'
 
 quote                       ['"]
 
@@ -78,22 +80,18 @@ quote                       ['"]
 
 <mc>{multicommentend}
     {
-        // console.warn(yytext, 'mc-end');
         this.popState();
     }
 ;
 
 <sc>{n}
     {
-        // console.warn(112312321);
         this.popState();
     }
 ;
 
 <s>{import}
     {
-        // console.warn(yytext, 'sss');
-        // console.warn('enter im');
         this.begin('im');
     }
 ;
@@ -132,6 +130,51 @@ quote                       ['"]
 ;
 
 <im>{semicolon}\n*
+    {
+        this.popState();
+    }
+;
+
+<s>{charset}
+    {
+        this.begin('ch');
+    }
+;
+
+<ch>[^;]+
+    {
+        /(['"])([\s\S]*)\1/.test(yytext);
+        var content = RegExp.$2;
+        var quote = RegExp.$1;
+
+        /^(\s*)/.test(yytext);
+        var before = RegExp.$1;
+
+        /(\s*)$/.test(yytext);
+        var after = RegExp.$1;
+
+        if (!yy.charsets) {
+            yy.charsets = [];
+        }
+
+        // 这里把 @import (less) 'aaa'; 里面的 (less) 暂时省略了
+        yy.charsets.push({
+            type: 'charset',
+            content: content,
+            quote: quote,
+            before: before,
+            after: after,
+            loc: {
+                firstLine: yylloc.first_line,
+                lastLine: yylloc.last_line,
+                firstCol: yylloc.first_column + 1,
+                lastCol: yylloc.last_column + 1
+            }
+        });
+    }
+;
+
+<ch>{semicolon}\n*
     {
         this.popState();
     }

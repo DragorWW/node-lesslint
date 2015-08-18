@@ -59,6 +59,7 @@ root
     : lines EOF
         {
             ast.imports = yy.imports;
+            ast.charsets = yy.charsets;
             return {
                 root: ast
             };
@@ -66,6 +67,7 @@ root
     | EOF
         {
             ast.imports = yy.imports || [];
+            ast.charsets = yy.charsets || [];
             return {
                 root: ast
             };
@@ -190,7 +192,7 @@ line
         }
     ;
 
-selector
+tag_selector
     : IDENT BRACE_BEGIN
         {
             $$ = {
@@ -209,7 +211,7 @@ selector
                 props: [],
                 children: []
             };
-            debug('selector', 'IDENT BRACE_BEGIN');
+            debug('tag_selector', 'IDENT BRACE_BEGIN');
         }
     | IDENT S BRACE_BEGIN
         {
@@ -229,9 +231,18 @@ selector
                 props: [],
                 children: []
             };
-            debug('selector', 'IDENT S BRACE_BEGIN');
+            debug('tag_selector', 'IDENT S BRACE_BEGIN');
         }
     ;
+
+
+selector
+    : tag_selector
+        {
+            debug('selector', 'tag_selector');
+        }
+    ;
+
 
 prop
     : PROPERTY
