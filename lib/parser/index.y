@@ -96,7 +96,7 @@ line
             else {
                 if (!curSelector.isEnd) {
                     $$.parent = curSelector;
-                    curSelector.children.push($$);
+                    curSelector.blocks.push($$);
                 }
             }
             curSelector = $$;
@@ -113,7 +113,7 @@ line
             else {
                 if (!curSelector.isEnd) {
                     $$.parent = curSelector;
-                    curSelector.children.push($$);
+                    curSelector.blocks.push($$);
                 }
             }
             curSelector = $$;
@@ -131,7 +131,7 @@ line
             else {
                 if (!curSelector.isEnd) {
                     $$.parent = curSelector;
-                    curSelector.children.push($$);
+                    curSelector.blocks.push($$);
                 }
             }
             curSelector = $$;
@@ -194,7 +194,7 @@ line
 
 // 标签选择器
 tag_selector
-    : IDENT BRACE_BEGIN
+    : IDENT
         {
             $$ = {
                 type: 'selector',
@@ -210,11 +210,11 @@ tag_selector
                     lastCol: @1.last_column + 1
                 },
                 props: [],
-                children: []
+                blocks: []
             };
-            debug('tag_selector', 'IDENT BRACE_BEGIN');
+            debug('tag_selector', 'IDENT');
         }
-    | IDENT S BRACE_BEGIN
+    | IDENT S
         {
             $$ = {
                 type: 'selector',
@@ -230,15 +230,15 @@ tag_selector
                     lastCol: @1.last_column + 1
                 },
                 props: [],
-                children: []
+                blocks: []
             };
-            debug('tag_selector', 'IDENT S BRACE_BEGIN');
+            debug('tag_selector', 'IDENT S');
         }
     ;
 
 // 类选择器
 class_selector
-    : '.' IDENT BRACE_BEGIN
+    : '.' IDENT
         {
             $$ = {
                 type: 'selector',
@@ -254,11 +254,11 @@ class_selector
                     lastCol: @1.last_column + 1
                 },
                 props: [],
-                children: []
+                blocks: []
             };
-            debug('class_selector', 'IDENT BRACE_BEGIN');
+            debug('class_selector', 'IDENT');
         }
-    | '.' IDENT S BRACE_BEGIN
+    | '.' IDENT S
         {
             $$ = {
                 type: 'selector',
@@ -274,20 +274,20 @@ class_selector
                     lastCol: @1.last_column + 1
                 },
                 props: [],
-                children: []
+                blocks: []
             };
-            debug('class_selector', 'IDENT S BRACE_BEGIN');
+            debug('class_selector', 'IDENT S');
         }
     ;
 
 selector
-    : tag_selector
+    : tag_selector BRACE_BEGIN
         {
-            debug('selector', 'tag_selector');
+            debug('selector', 'tag_selector BRACE_BEGIN');
         }
-    | class_selector
+    | class_selector BRACE_BEGIN
         {
-            debug('selector', 'tag_selector');
+            debug('selector', 'class_selector BRACE_BEGIN');
         }
     ;
 

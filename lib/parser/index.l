@@ -26,14 +26,16 @@ nmstart                     [_a-zA-Z]|{nonascii}|{escape}
 nmchar                      [_a-zA-Z0-9\-]|{nonascii}|{escape}
 
 // ident                       [\-]?{nmstart}{nmchar}*
-ident                       \-*[_a-zA-Z0-9$\-\.]+
+// ident                       \-*[_a-zA-Z0-9$\-\.#\*]+
+ident                       \-*[_a-zA-Z0-9$\-#\*]+
+dot                         \.{1}
 
 colon                       \:+
 semicolon                   \;+
 
 all                         [\s\S]
 
-selector                    {ident}[ \t\s]*\{\n*
+// selector                    {ident}[ \t\s]*\{\n*
 // [\-]?[_a-zA-Z]|[\240-\377]|\\{h}{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-fA-F][_a-zA-Z0-9\-]|{[\240-\377]}|{\\{h}{1,6}(\r\n|[ \t\r\n\f])?}|\\[^\r\n\f0-9a-fA-F]*[ \t\s]*\{\n*
 
 /*comment                     ^(\/\*(?:[^*]|\*+[^\])*\*+\/\n?|\/\/[\s\S]*)*/
@@ -272,6 +274,13 @@ quote                       ['"]
         return 'IDENT';
     }
 ;
+
+<s>{dot}
+    {
+        return 'DOT';
+    }
+;
+
 
 <INITIAL><<EOF>>
     {
