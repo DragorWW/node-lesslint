@@ -264,7 +264,7 @@ class_selector
                 type: 'selector',
                 value: $1 + $2,
                 before: '',
-                after: $2,
+                after: $3,
                 parent: null,
                 isEnd: false,   // 选择器是否结束即是否遇到了 BRACE_END 符号，用于确定下一个选择器是子选择器还是兄弟选择器
                 loc: {
@@ -280,17 +280,57 @@ class_selector
         }
     ;
 
-selector
-    : tag_selector BRACE_BEGIN
+selector_item
+    : tag_selector
         {
-            debug('selector', 'tag_selector BRACE_BEGIN');
+            debug('selector_item', 'tag_selector');
         }
-    | class_selector BRACE_BEGIN
+    | class_selector
         {
-            debug('selector', 'class_selector BRACE_BEGIN');
+            debug('selector_item', 'class_selector');
         }
+    | selector_item class_selector
+        {
+            if (!$1.after) {
+                $1.value += $2.value;
+                $$ = $1;
+            }
+            else {
+                $2.parent = $1;
+                $1.blocks.push($2);
+                $$ = $1;
+            }
+            // curSelector = $$;
+            // ast.selectors.push($$);
+            debug('selector_item', 'selector_item class_selector');
+        }
+    // | selector_item class_selector S
+    //     {
+    //         // console.warn(curSelector);
+    //         console.warn($1);
+    //         console.warn($2);
+    //         $2.after = $3;
+    //         if (!$1.after) {
+    //             $1.value += $2.value;
+    //             $$ = $1;
+    //         }
+    //         else {
+    //             $2.parent = $1;
+    //             $1.blocks.push($2);
+    //             $$ = $1;
+    //         }
+    //         // curSelector = $$;
+    //         // ast.selectors.push($$);
+    //         debug('selector_item', 'selector_item class_selector S');
+    //     }
     ;
 
+selector
+    : selector_item BRACE_BEGIN
+        {
+            debug('selector', 'selector BRACE_BEGIN');
+        }
+    ;
 
 prop
     : PROPERTY

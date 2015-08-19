@@ -30,6 +30,8 @@ nmchar                      [_a-zA-Z0-9\-]|{nonascii}|{escape}
 ident                       \-*[_a-zA-Z0-9$\-#\*]+
 dot                         \.{1}
 
+combinator                  [>+~,]{1}
+
 colon                       \:+
 semicolon                   \;+
 
@@ -200,6 +202,12 @@ quote                       ['"]
     {
         // console.log(this, '11');
         return 'S';
+    }
+;
+
+<s,b,sb,p>{combinator}
+    {
+        return 'COMBINATOR';
     }
 ;
 
