@@ -238,7 +238,7 @@ tag_selector
 
 // 类选择器
 class_selector
-    : '.' IDENT
+    : DOT IDENT
         {
             $$ = {
                 type: 'selector',
@@ -256,9 +256,9 @@ class_selector
                 props: [],
                 blocks: []
             };
-            debug('class_selector', 'IDENT');
+            debug('class_selector', 'DOT IDENT');
         }
-    | '.' IDENT S
+    | DOT IDENT S
         {
             $$ = {
                 type: 'selector',
@@ -276,7 +276,7 @@ class_selector
                 props: [],
                 blocks: []
             };
-            debug('class_selector', 'IDENT S');
+            debug('class_selector', 'DOT IDENT S');
         }
     ;
 
