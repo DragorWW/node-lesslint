@@ -192,6 +192,7 @@ line
         }
     ;
 
+// 标签选择器
 tag_selector
     : IDENT BRACE_BEGIN
         {
@@ -235,9 +236,56 @@ tag_selector
         }
     ;
 
+// 类选择器
+class_selector
+    : '.' IDENT BRACE_BEGIN
+        {
+            $$ = {
+                type: 'selector',
+                value: $1 + $2,
+                before: '',
+                after: '',
+                parent: null,
+                isEnd: false,   // 选择器是否结束即是否遇到了 BRACE_END 符号，用于确定下一个选择器是子选择器还是兄弟选择器
+                loc: {
+                    firstLine: @1.first_line,
+                    lastLine: @1.last_line,
+                    firstCol: @1.first_column + 1,
+                    lastCol: @1.last_column + 1
+                },
+                props: [],
+                children: []
+            };
+            debug('class_selector', 'IDENT BRACE_BEGIN');
+        }
+    | '.' IDENT S BRACE_BEGIN
+        {
+            $$ = {
+                type: 'selector',
+                value: $1 + $2,
+                before: '',
+                after: $2,
+                parent: null,
+                isEnd: false,   // 选择器是否结束即是否遇到了 BRACE_END 符号，用于确定下一个选择器是子选择器还是兄弟选择器
+                loc: {
+                    firstLine: @1.first_line,
+                    lastLine: @1.last_line,
+                    firstCol: @1.first_column + 1,
+                    lastCol: @1.last_column + 1
+                },
+                props: [],
+                children: []
+            };
+            debug('class_selector', 'IDENT S BRACE_BEGIN');
+        }
+    ;
 
 selector
     : tag_selector
+        {
+            debug('selector', 'tag_selector');
+        }
+    | class_selector
         {
             debug('selector', 'tag_selector');
         }

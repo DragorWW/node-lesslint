@@ -25,9 +25,8 @@ escape                      {unicode}|\\[^\r\n\f0-9a-fA-F]
 nmstart                     [_a-zA-Z]|{nonascii}|{escape}
 nmchar                      [_a-zA-Z0-9\-]|{nonascii}|{escape}
 
-ident                       [\-]?{nmstart}{nmchar}*
-// ident                    \-*[_a-zA-Z$][-\w\d$]+
-// ident                    \-*[_a-zA-Z0-9$]+
+// ident                       [\-]?{nmstart}{nmchar}*
+ident                       \-*[_a-zA-Z0-9$\-\.]+
 
 colon                       \:+
 semicolon                   \;+
