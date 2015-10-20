@@ -1,72 +1,8 @@
 {
     "root": {
         "variables": [],
-        "selectors": [
-            {
-                "type": "selector",
-                "value": ".a",
-                "before": "",
-                "after": " ",
-                "parent": null,
-                "isEnd": true,
-                "loc": {
-                    "firstLine": 1,
-                    "lastLine": 1,
-                    "firstCol": 1,
-                    "lastCol": 2
-                },
-                "props": [
-                    {
-                        "type": "prop",
-                        "prop": "p1",
-                        "beforeProp": "    ",
-                        "afterProp": "",
-                        "value": "v1",
-                        "beforeValue": " ",
-                        "afterValue": "",
-                        "loc": {
-                            "firstLine": 2,
-                            "lastLine": 2,
-                            "firstCol": 1,
-                            "lastCol": 7
-                        }
-                    }
-                ],
-                "blocks": [
-                    {
-                        "type": "selector",
-                        "value": ".b",
-                        "before": "",
-                        "after": "",
-                        "parent": "[Circular ~.root.selectors.0]",
-                        "isEnd": false,
-                        "loc": {
-                            "firstLine": 1,
-                            "lastLine": 1,
-                            "firstCol": 4,
-                            "lastCol": 5
-                        },
-                        "props": [],
-                        "blocks": []
-                    },
-                    {
-                        "type": "selector",
-                        "value": ".c",
-                        "before": "",
-                        "after": " ",
-                        "parent": "[Circular ~.root.selectors.0]",
-                        "isEnd": false,
-                        "loc": {
-                            "firstLine": 1,
-                            "lastLine": 1,
-                            "firstCol": 6,
-                            "lastCol": 7
-                        },
-                        "props": [],
-                        "blocks": []
-                    }
-                ]
-            }
-        ]
+        "imports": [],
+        "selectors": [],
+        "charsets": []
     }
 }
