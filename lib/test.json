@@ -3,6 +3,21 @@
         "variables": [],
         "imports": [],
         "selectors": [],
-        "charsets": []
+        "charsets": [
+            {
+                "type": "charset",
+                "content": "UTF-8",
+                "quote": "\"",
+                "before": "   ",
+                "after": "",
+                "loc": {
+                    "firstLine": 1,
+                    "lastLine": 1,
+                    "firstCol": 13,
+                    "lastCol": 20,
+                    "originContent": "   \"UTF-8\""
+                }
+            }
+        ]
     }
 }

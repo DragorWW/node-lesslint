@@ -28,7 +28,8 @@
     "coverage": "istanbul cover jasmine-node --captureExceptions test/**/*.spec.js",
     "test": "npm run lint && npm run coverage",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "start": "jison lib/parser/index.y lib/parser/index.l -o lib/parser/index.js && node lib/test.js"
+    "start": "jison lib/parser/index.y lib/parser/index.l -o lib/parser/index.js && node lib/test.js",
+    "debug": "jison lib/parser/index.y lib/parser/index.l -o lib/parser/index.js && node --debug-brk lib/test.js"
   },
   "main": "./lib/checker.js",
   "bin": {

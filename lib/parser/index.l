@@ -1,5 +1,12 @@
 %{
     yy.a = 'aaa';
+    var s, s2, s3;
+    var rv, rv2, e_offset, col, row, len, value;
+    var match, match2;
+
+    // console.log("lexer action: ", yy, yy_, this, yytext, YY_START, $avoiding_name_collisions);
+    var parser = yy.parser;
+    // console.warn(YY_START);
 %}
 
 // 状态：
@@ -16,40 +23,9 @@
 // ch 进入 @charset 语句后的状态
 %x s sc mc b sb p im ch
 
-// 不需要 \r 了，解析前已经做了替换
-n                           \n+
-s                           [ \t\s]+
-nonascii                    [\240-\377]
-unicode                     \\{h}{1,6}(\r\n|[ \t\r\n\f])?
-escape                      {unicode}|\\[^\r\n\f0-9a-fA-F]
-nmstart                     [_a-zA-Z]|{nonascii}|{escape}
-nmchar                      [_a-zA-Z0-9\-]|{nonascii}|{escape}
-
-// ident                       [\-]?{nmstart}{nmchar}*
-// ident                       \-*[_a-zA-Z0-9$\-\.#\*]+
-ident                       \-*[_a-zA-Z0-9$\-#\*]+
-dot                         \.{1}
-
-combinator                  [>+~,]{1}
-
-colon                       \:+
 semicolon                   \;+
-
-all                         [\s\S]
-
-// selector                    {ident}[ \t\s]*\{\n*
-// [\-]?[_a-zA-Z]|[\240-\377]|\\{h}{1,6}(\r\n|[ \t\r\n\f])?|\\[^\r\n\f0-9a-fA-F][_a-zA-Z0-9\-]|{[\240-\377]}|{\\{h}{1,6}(\r\n|[ \t\r\n\f])?}|\\[^\r\n\f0-9a-fA-F]*[ \t\s]*\{\n*
-
-/*comment                     ^(\/\*(?:[^*]|\*+[^\])*\*+\/\n?|\/\/[\s\S]*)*/
-// singlecomment               ^(\/\/.*[^\n])
-singlecomment               ^(\/\/.*)
-// multicomment                ^\/\*[^*]*\*+([^\][^*]*\*+)*\/
-// multicommentstart           ^(\/\*[\s\S]+)
-multicommentstart           ^(\/\*)
-multicommentend             ([^\][^*]*\*+)*\/\n*
-
-import                      ^\s*'@import'
-charset                     ^\s*'@charset'
+import                      ^\s*'@import '
+charset                     ^\s*'@charset '
 
 quote                       ['"]
 
@@ -62,37 +38,6 @@ quote                       ['"]
 
 %%
 
-/* lexical grammar */
-
-// <s>\-*[_a-zA-Z$]+       {return 'TEST1'}
-// <s>([0-9]+(\.[0-9]+)?)|(\.[0-9]+) {return 'TEST2'}
-
-<s>{singlecomment}
-    {
-        // console.warn(yytext, 123123);
-        this.begin('sc');
-    }
-;
-
-<s>{multicommentstart}
-    {
-        // console.warn(yytext, 'mc-start');
-        this.begin('mc');
-    }
-;
-
-<mc>{multicommentend}
-    {
-        this.popState();
-    }
-;
-
-<sc>{n}
-    {
-        this.popState();
-    }
-;
-
 <s>{import}
     {
         this.begin('im');
@@ -101,32 +46,52 @@ quote                       ['"]
 
 <im>[^;]+
     {
-        /(['"])([\s\S]*)\1/.test(yytext);
-        var content = RegExp.$2;
-        var quote = RegExp.$1;
+        // 移除左边空格后的 yytext
+        var removeSpaceBeforeYYtext = yytext.replace(/^(\s*)/, '');
+        var beforeSpace = RegExp.$1 || '';
 
-        /^(\s*)/.test(yytext);
-        var before = RegExp.$1;
+        // 移除右边空格后的 yytext
+        var removeSpaceAfterYYtext = yytext.replace(/(\s*)$/, '');
+        var afterSpace = RegExp.$1;
 
-        /(\s*)$/.test(yytext);
-        var after = RegExp.$1;
+        // 移除左右空格后的 yytext
+        var removeSpaceAroundYYtext = yytext.replace(/^(\s*)/, '').replace(/(\s*)$/, '');
+
+        var content = '';
+        var quote = '';
+
+        if (/url\((.*)\)/.test(removeSpaceAroundYYtext)) {
+            content = 'url(' + RegExp.$1 + ')';
+            if (/(['"])([\s\S]*)\1/.test(content)) {
+                quote = RegExp.$1;
+            }
+        }
+        else {
+            /(['"])([\s\S]*)\1/.test(yytext);
+            content = RegExp.$2;
+            quote = RegExp.$1;
+        }
+
+        if (!content) {
+            content = removeSpaceAroundYYtext;
+        }
 
         if (!yy.imports) {
             yy.imports = [];
         }
 
-        // 这里把 @import (less) 'aaa'; 里面的 (less) 暂时省略了
         yy.imports.push({
             type: 'import',
             content: content,
             quote: quote,
-            before: before,
-            after: after,
+            before: beforeSpace,
+            after: afterSpace,
             loc: {
                 firstLine: yylloc.first_line,
                 lastLine: yylloc.last_line,
-                firstCol: yylloc.first_column + 1,
-                lastCol: yylloc.last_column + 1
+                firstCol: yylloc.first_column + 1 + beforeSpace.length,
+                lastCol: yylloc.last_column + 1,
+                originContent: yytext
             }
         });
     }
@@ -151,7 +116,7 @@ quote                       ['"]
         var quote = RegExp.$1;
 
         /^(\s*)/.test(yytext);
-        var before = RegExp.$1;
+        var before = RegExp.$1 || '';
 
         /(\s*)$/.test(yytext);
         var after = RegExp.$1;
@@ -160,7 +125,6 @@ quote                       ['"]
             yy.charsets = [];
         }
 
-        // 这里把 @import (less) 'aaa'; 里面的 (less) 暂时省略了
         yy.charsets.push({
             type: 'charset',
             content: content,
@@ -170,8 +134,9 @@ quote                       ['"]
             loc: {
                 firstLine: yylloc.first_line,
                 lastLine: yylloc.last_line,
-                firstCol: yylloc.first_column + 1,
-                lastCol: yylloc.last_column + 1
+                firstCol: yylloc.first_column + 1 + before.length,
+                lastCol: yylloc.last_column + 1,
+                originContent: yytext
             }
         });
     }
@@ -183,112 +148,6 @@ quote                       ['"]
     }
 ;
 
-// // <im>{all}*(quote)?{all}*\1?[^;]
-// <im>[^;]+(quote)+[^;]+\1[^;]*
-//     {
-//         console.warn(yytext);
-//         console.warn(1);
-//     }
-// ;
-
-<s,b,sb,p>{n}
-    {
-        // console.log(this, '11');
-        return 'N';
-    }
-;
-
-<s,b,sb,p>{s}
-    {
-        // console.log(this, '11');
-        return 'S';
-    }
-;
-
-<s,b,sb,p>{combinator}
-    {
-        return 'COMBINATOR';
-    }
-;
-
-<s,b,sb,p>{colon}
-    {
-        return 'COLON';
-    }
-;
-
-<s,b,sb,p>{semicolon}
-    {
-        return 'SEMICOLON';
-    }
-;
-
-<s,b,sb>'{'
-    {
-        if (this.topState() === 'b') {
-            this.begin('sb');
-        }
-        else {
-            this.begin('b');
-        }
-        // console.warn(this.topState(), 'rrr');
-        return 'BRACE_BEGIN';
-    }
-;
-
-<b,sb>'}'
-    {
-        // if (this.topState() === 'sb') {
-        //     this.begin('b');
-        // }
-        // else {
-            this.popState();
-        // }
-        return 'BRACE_END';
-    }
-;
-
-// <b,sb>{ident}\s*/{colon}
-<b,sb>{ident}/(\s*{colon})
-    {
-        // console.log(yytext, this.topState(), 'p');
-        this.begin('p');
-        // console.log(yytext, this.topState(), 'p');
-        return 'PROPERTY';
-    }
-;
-
-// 匹配属性值中带有空格的情况
-<p>{ident}\s+{ident}
-    {
-        // console.warn(yytext);
-        this.popState();
-        // console.log(yytext + '--', this.topState(), 'sss');
-        return 'VALUE';
-    }
-;
-
-<p>{ident}
-    {
-        // console.warn(yytext);
-        this.popState();
-        // console.log(yytext + '--', this.topState(), 'sss');
-        return 'VALUE';
-    }
-;
-
-<s,b,sb>{ident}
-    {
-        return 'IDENT';
-    }
-;
-
-<s>{dot}
-    {
-        return 'DOT';
-    }
-;
-
 
 <INITIAL><<EOF>>
     {
@@ -296,7 +155,7 @@ quote                       ['"]
     }
 ;
 
-<s,sc,mc><<EOF>>
+<s><<EOF>>
     {
         this.popState();
         return 'EOF';

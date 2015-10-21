@@ -1,0 +1,46 @@
+@import    url(./aaa.less);
+@import       (inline, css) './aaa.less';
+
+@import url("aaa.less");
+@import url('aaa.less') screen and (color) and (max-width: 600px);
+
+@import url("import/import-test-c.less");
+@import (inline) url("import/import-test-d.css") (min-width:600px);
+@import (inline, css) url("import/invalid-css.less");
+
+@import "import/import-@{my_theme}-e.less";
+
+@import "import/import-@{in}@{terpolation}.less";
+
+@import "import/interpolation-vars.less";
+
+@import "import/import-once-test-c";
+@import "import/import-once-test-c";
+@import "import/import-once-test-c.less";
+@import "import/deeper/import-once-test-a";
+@import (multiple) "import/import-test-f.less";
+@import (multiple) "import/import-test-f.less";
+
+@import (reference) url("import-once.less");
+@import (reference) url("css-3.less");
+@import (reference) url("media.less");
+@import (reference) url("import/import-reference.less");
+@import (reference) url("import/css-import.less");
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+
+@import url(/absolute/something.css) screen and (color) and (max-width: 600px);
+
+@import (optional) "file-does-not-exist.does-not-exist";
+
+@import url("//ha.com/file.css") (min-width:@var);
+
+@import "import/import-test-e" screen and (max-width: 600px);
+
+@import url("import/import-test-a.less");
+
+@import (less, multiple) "import/import-test-d.css" screen and (max-width: 601px);
+
+@import (multiple) "import/import-test-e" screen and (max-width: 602px);
+
+@import (less, multiple) url("import/import-test-d.css") screen and (max-width: 603px);
