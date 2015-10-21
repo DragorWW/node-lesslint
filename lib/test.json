@@ -3,19 +3,50 @@
         "variables": [],
         "imports": [],
         "selectors": [],
-        "charsets": [
+        "charsets": [],
+        "sComments": [
             {
-                "type": "charset",
-                "content": "UTF-8",
-                "quote": "\"",
-                "before": "   ",
-                "after": "",
+                "type": "sComment",
+                "content": "// @import './aaa.les;s';",
                 "loc": {
                     "firstLine": 1,
                     "lastLine": 1,
-                    "firstCol": 13,
-                    "lastCol": 20,
-                    "originContent": "   \"UTF-8\""
+                    "firstCol": 1,
+                    "lastCol": 26,
+                    "originContent": "// @import './aaa.les;s';"
+                }
+            },
+            {
+                "type": "sComment",
+                "content": "// adasd",
+                "loc": {
+                    "firstLine": 2,
+                    "lastLine": 2,
+                    "firstCol": 1,
+                    "lastCol": 9,
+                    "originContent": "// adasd"
+                }
+            },
+            {
+                "type": "sComment",
+                "content": "// dasda",
+                "loc": {
+                    "firstLine": 3,
+                    "lastLine": 3,
+                    "firstCol": 1,
+                    "lastCol": 9,
+                    "originContent": "// dasda"
+                }
+            },
+            {
+                "type": "sComment",
+                "content": "//",
+                "loc": {
+                    "firstLine": 4,
+                    "lastLine": 4,
+                    "firstCol": 1,
+                    "lastCol": 3,
+                    "originContent": "//"
                 }
             }
         ]

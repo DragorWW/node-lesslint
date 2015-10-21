@@ -43,6 +43,7 @@ root
         {
             ast.imports = yy.imports;
             ast.charsets = yy.charsets;
+            ast.sComments = yy.sComments;
             return {
                 root: ast
             };
@@ -51,6 +52,7 @@ root
         {
             ast.imports = yy.imports || [];
             ast.charsets = yy.charsets || [];
+            ast.sComments = yy.sComments || [];
             return {
                 root: ast
             };

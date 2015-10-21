@@ -23,10 +23,12 @@
 // ch 进入 @charset 语句后的状态
 %x s sc mc b sb p im ch
 
+n                           \n+
+
 semicolon                   \;+
 import                      ^\s*'@import '
 charset                     ^\s*'@charset '
-
+singlecomment               ^(\/\/.*)
 quote                       ['"]
 
 
@@ -44,7 +46,7 @@ quote                       ['"]
     }
 ;
 
-<im>[^;]+
+<im>[^\n]+
     {
         // 移除左边空格后的 yytext
         var removeSpaceBeforeYYtext = yytext.replace(/^(\s*)/, '');
@@ -97,7 +99,7 @@ quote                       ['"]
     }
 ;
 
-<im>{semicolon}\n*
+<im>\n+
     {
         this.popState();
     }
@@ -109,7 +111,7 @@ quote                       ['"]
     }
 ;
 
-<ch>[^;]+
+<ch>[^\n]+
     {
         /(['"])([\s\S]*)\1/.test(yytext);
         var content = RegExp.$2;
@@ -142,7 +144,35 @@ quote                       ['"]
     }
 ;
 
-<ch>{semicolon}\n*
+<ch>\n+
+    {
+        this.popState();
+    }
+;
+
+<s,b,sb,p,im,ch>{singlecomment}
+    {
+        if (!yy.sComments) {
+            yy.sComments = [];
+        }
+
+        yy.sComments.push({
+            type: 'sComment',
+            content: yytext,
+            loc: {
+                firstLine: yylloc.first_line,
+                lastLine: yylloc.last_line,
+                firstCol: yylloc.first_column + 1,
+                lastCol: yylloc.last_column + 1,
+                originContent: yytext
+            }
+        });
+
+        this.begin('sc');
+    }
+;
+
+<sc>{n}
     {
         this.popState();
     }
