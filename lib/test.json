@@ -1,52 +1,48 @@
 {
     "root": {
         "variables": [],
-        "imports": [],
         "selectors": [],
-        "charsets": [],
-        "sComments": [
+        "charsets": [
             {
-                "type": "sComment",
-                "content": "// @import './aaa.les;s';",
+                "type": "charset",
+                "content": "\"UTF//-;8\"",
+                "quote": "\"",
+                "before": "    ",
+                "after": "\n  ",
                 "loc": {
                     "firstLine": 1,
                     "lastLine": 1,
-                    "firstCol": 1,
-                    "lastCol": 26,
-                    "originContent": "// @import './aaa.les;s';"
+                    "firstCol": 5,
+                    "lastCol": 28,
+                    "originContent": "    @charset    \"UTF//-;8\";\n  "
                 }
             },
             {
-                "type": "sComment",
-                "content": "// adasd",
+                "type": "charset",
+                "content": "\"asdasda//asdqwew'''qwewqeqw\"",
+                "quote": "\"",
+                "before": "",
+                "after": "\n",
                 "loc": {
                     "firstLine": 2,
                     "lastLine": 2,
-                    "firstCol": 1,
-                    "lastCol": 9,
-                    "originContent": "// adasd"
+                    "firstCol": 3,
+                    "lastCol": 45,
+                    "originContent": "@charset    \"asdasda//asdqwew'''qwewqeqw\";\n"
                 }
             },
             {
-                "type": "sComment",
-                "content": "// dasda",
+                "type": "charset",
+                "content": "\"utf8\"",
+                "quote": "\"",
+                "before": "",
+                "after": "\n",
                 "loc": {
                     "firstLine": 3,
                     "lastLine": 3,
                     "firstCol": 1,
-                    "lastCol": 9,
-                    "originContent": "// dasda"
-                }
-            },
-            {
-                "type": "sComment",
-                "content": "//",
-                "loc": {
-                    "firstLine": 4,
-                    "lastLine": 4,
-                    "firstCol": 1,
-                    "lastCol": 3,
-                    "originContent": "//"
+                    "lastCol": 16,
+                    "originContent": "@charset\"utf8\";\n"
                 }
             }
         ]

@@ -6,7 +6,8 @@
     var ast = {
         variables: [],
         imports: [],
-        selectors: []
+        selectors: [],
+        charsets: []
     };
 
     var curSelector = null;
@@ -35,14 +36,16 @@
 
 /* operator associations and precedence */
 
+%nonassoc SPACE
+
 %start root
 %%
 
 root
-    : lines EOF
+    : blocks EOF
         {
             ast.imports = yy.imports;
-            ast.charsets = yy.charsets;
+            // ast.charsets = yy.charsets;
             ast.sComments = yy.sComments;
             return {
                 root: ast
@@ -51,7 +54,7 @@ root
     | EOF
         {
             ast.imports = yy.imports || [];
-            ast.charsets = yy.charsets || [];
+            // ast.charsets = yy.charsets || [];
             ast.sComments = yy.sComments || [];
             return {
                 root: ast
@@ -59,20 +62,154 @@ root
         }
     ;
 
-lines
-    : line N
+blocks
+    // : variable_definition
+    // | import_stmt
+    : charset_stmt
+    | blocks charset_stmt
+    // | block
+    ;
+
+
+variable_definition
+    :
+    ;
+
+import_stmt
+    :
+    ;
+
+/*charset_stmt
+    : CHARSET SPACE STRING SEMICOLON space_or_empty
         {
-            debug('lines', 'line N');
+            ast.charsets.push({
+                type: 'charset',
+                content: $3,
+                quote: $3.slice(0, 1),
+                before: '',
+                after: $5,
+                loc: {
+                    firstLine: @1.first_line,
+                    lastLine: @3.last_line,
+                    firstCol: @1.first_column + 1,
+                    lastCol: @4.last_column + 1,
+                    originContent: $1 + $2 + $3 + $4 + $5
+                }
+            })
         }
-    | lines line N
+    | SPACE CHARSET SPACE STRING SEMICOLON space_or_empty
         {
-            debug('lines', 'lines line N');
+            ast.charsets.push({
+                type: 'charset',
+                content: $4,
+                quote: $4.slice(0, 1),
+                before: $1,
+                after: $6,
+                loc: {
+                    firstLine: @2.first_line,
+                    lastLine: @4.last_line,
+                    firstCol: @2.first_column + 1,
+                    lastCol: @5.last_column + 1,
+                    originContent: $1 + $2 + $3 + $4 + $5 + $6
+                }
+            })
+        }
+    ;
+*/
+
+charset_stmt
+    : charset_stmt_start STRING SEMICOLON charset_stmt_end
+        {
+            console.warn($4 + "++");
+            ast.charsets.push({
+                type: 'charset',
+                content: $2,
+                quote: $2.slice(0, 1),
+                before: '',
+                after: $4,
+                loc: {
+                    firstLine: @1.first_line,
+                    lastLine: @2.last_line,
+                    firstCol: @1.first_column + 1,
+                    lastCol: @3.last_column + 1,
+                    originContent: $1 + $2 + $3 + $4
+                }
+            })
+        }
+    | SPACE charset_stmt_start STRING SEMICOLON charset_stmt_end
+        {
+            console.warn($5 + "---");
+            ast.charsets.push({
+                type: 'charset',
+                content: $3,
+                quote: $3.slice(0, 1),
+                before: $1,
+                after: $5,
+                loc: {
+                    firstLine: @2.first_line,
+                    lastLine: @4.last_line,
+                    firstCol: @2.first_column + 1,
+                    lastCol: @4.last_column + 1,
+                    originContent: $1 + $2 + $3 + $4 + $5
+                }
+            })
         }
     ;
 
-line
+charset_stmt_start
+    : CHARSET
+        {
+            $$ = $1;
+        }
+    | CHARSET SPACE
+        {
+            $$ = $1 + $2;
+        }
+    ;
+
+charset_stmt_end
+    : SPACE
+        {
+            $$ = $1;
+        }
+    | N
+        {
+            $$ = $1;
+        }
+    ;
+
+
+block
     :
     ;
+
+// S*
+space_or_empty
+    : SPACE
+        {
+            debug('s_or_empty', 'SPACE');
+        }
+    | N
+        {
+            debug('semicolon_or_empty', 'N');
+        }
+    | ''
+        {
+            debug('semicolon_or_empty', 'empty');
+        }
+    ;
+
+
+// lines
+//     : line N
+//         {
+//             debug('lines', 'line N');
+//         }
+//     | lines line N
+//         {
+//             debug('lines', 'lines line N');
+//         }
+//     ;
 
 // line
 //     : selector
