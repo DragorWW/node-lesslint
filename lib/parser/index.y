@@ -120,54 +120,78 @@ import_stmt
 charset_stmt
     : charset_stmt_start STRING SEMICOLON charset_stmt_end
         {
-            console.warn($4 + "++");
+            console.warn($1, $4);
             ast.charsets.push({
                 type: 'charset',
                 content: $2,
                 quote: $2.slice(0, 1),
-                before: '',
+                before: $1.before,
                 after: $4,
                 loc: {
                     firstLine: @1.first_line,
                     lastLine: @2.last_line,
                     firstCol: @1.first_column + 1,
                     lastCol: @3.last_column + 1,
-                    originContent: $1 + $2 + $3 + $4
+                    originContent: $1.content + $2 + $3
                 }
             })
         }
-    | SPACE charset_stmt_start STRING SEMICOLON charset_stmt_end
-        {
-            console.warn($5 + "---");
-            ast.charsets.push({
-                type: 'charset',
-                content: $3,
-                quote: $3.slice(0, 1),
-                before: $1,
-                after: $5,
-                loc: {
-                    firstLine: @2.first_line,
-                    lastLine: @4.last_line,
-                    firstCol: @2.first_column + 1,
-                    lastCol: @4.last_column + 1,
-                    originContent: $1 + $2 + $3 + $4 + $5
-                }
-            })
-        }
+    // | SPACE charset_stmt_start STRING SEMICOLON
+    //     {
+    //         // console.warn($5 + "---");
+    //         ast.charsets.push({
+    //             type: 'charset',
+    //             content: $3,
+    //             quote: $3.slice(0, 1),
+    //             before: $1,
+    //             // after: $5,
+    //             loc: {
+    //                 firstLine: @2.first_line,
+    //                 lastLine: @4.last_line,
+    //                 firstCol: @2.first_column + 1,
+    //                 lastCol: @4.last_column + 1,
+    //                 originContent: $1 + $2 + $3 + $4
+    //             }
+    //         })
+    //     }
     ;
 
 charset_stmt_start
     : CHARSET
         {
-            $$ = $1;
+            $$ = {
+                before: '',
+                content: $1
+            };
         }
     | CHARSET SPACE
         {
-            $$ = $1 + $2;
+            $$ = {
+                before: '',
+                content: $1 + $2
+            };
+        }
+    | SPACE CHARSET
+        {
+            $$ = {
+                before: $1,
+                content: $1 + $2
+            };
+        }
+    | SPACE CHARSET SPACE
+        {
+            $$ = {
+                before: $1,
+                content: $1 + $2 + $3
+            };
         }
     ;
 
 charset_stmt_end
+    // : N
+    //     {
+    //         $$ = $1;
+    //     }
     : SPACE
         {
             $$ = $1;

@@ -12,9 +12,9 @@
                 "loc": {
                     "firstLine": 1,
                     "lastLine": 1,
-                    "firstCol": 5,
+                    "firstCol": 1,
                     "lastCol": 28,
-                    "originContent": "    @charset    \"UTF//-;8\";\n  "
+                    "originContent": "    @charset    \"UTF//-;8\";"
                 }
             },
             {
@@ -28,7 +28,7 @@
                     "lastLine": 2,
                     "firstCol": 3,
                     "lastCol": 45,
-                    "originContent": "@charset    \"asdasda//asdqwew'''qwewqeqw\";\n"
+                    "originContent": "@charset    \"asdasda//asdqwew'''qwewqeqw\";"
                 }
             },
             {
@@ -42,7 +42,7 @@
                     "lastLine": 3,
                     "firstCol": 1,
                     "lastCol": 16,
-                    "originContent": "@charset\"utf8\";\n"
+                    "originContent": "@charset\"utf8\";"
                 }
             }
         ]
