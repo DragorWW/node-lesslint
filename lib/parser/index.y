@@ -36,7 +36,7 @@
 
 /* operator associations and precedence */
 
-%nonassoc SPACE
+// %nonassoc SPACE
 
 %start root
 %%

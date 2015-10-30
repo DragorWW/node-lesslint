@@ -49,242 +49,41 @@ quote                       ['"]
 
 %%
 
-<s,ch>{string}
-    {
-        return 'STRING';
-    }
-;
-
-<s,ch>{space}
+<s>{space}
     {
         return 'SPACE';
     }
 ;
 
-<s,ch>{n}
+<s>{n}
     {
         return 'N';
     }
 ;
 
-
-<s>{charset}
+<s>{semicolon}
     {
-        this.begin('ch');
-        return 'CHARSET';
-    }
-;
-
-<ch>\n+
-    {
-        this.popState();
-    }
-;
-
-<ch>{semicolon}
-    {
-        this.popState();
+        // this.popState();
         return 'SEMICOLON';
     }
 ;
 
-
-// 任何状态中，非字符串内的 `//` 后面都是注释
-// <INITIAL,s>{singlecomment}
-//     {
-//         this.begin('sc');
-//         if (!yy.sComments) {
-//             yy.sComments = [];
-//         }
-
-//         /(['"]).*\1.*(\/\/.*)/.test(yytext);
-
-//         yy.sComments.push({
-//             type: 'sComment',
-//             content: RegExp.$2,
-//             loc: {
-//                 firstLine: yylloc.first_line,
-//                 lastLine: yylloc.last_line,
-//                 firstCol: yylloc.first_column + 1,
-//                 lastCol: yylloc.last_column + 1,
-//                 originContent: yytext
-//             }
-//         });
-//     }
-// ;
-
-// <sc>{n}
-//     {
-//         this.popState();
-//     }
-// ;
-
-/*<s,b,sb,p,im,ch>{singlecomment}
+<s>{string}
     {
-        if (!yy.sComments) {
-            yy.sComments = [];
-        }
-
-        yy.sComments.push({
-            type: 'sComment',
-            content: yytext,
-            loc: {
-                firstLine: yylloc.first_line,
-                lastLine: yylloc.last_line,
-                firstCol: yylloc.first_column + 1,
-                lastCol: yylloc.last_column + 1,
-                originContent: yytext
-            }
-        });
-
-        this.begin('sc');
-    }
-;
-
-<sc>{n}
-    {
-        this.popState();
-    }
-;
-
-<s>{import}
-    {
-        this.begin('im');
-    }
-;
-
-<im>[^\n]+
-    {
-        // console.warn(this.matches);
-        // 移除左右空格后的 yytext
-        var removeSpaceAroundYYtext = yytext.replace(/^(\s*)/, '').replace(/(\s*)$/, '');
-
-        // 去掉字符串即引号内的内容
-        var removeQuoteContentYYtext = removeSpaceAroundYYtext.replace(/(['"])([\s\S]*)\1/, '');
-
-        if (/(\/{2,}.*)/.test(removeQuoteContentYYtext)) {
-            // this.begin('sc');
-            // var scContent = RegExp.$1;
-            // if (!yy.sComments) {
-            //     yy.sComments = [];
-            // }
-
-            // yy.sComments.push({
-            //     type: 'sComment',
-            //     content: scContent,
-            //     loc: {
-            //         firstLine: yylloc.first_line,
-            //         lastLine: yylloc.last_line,
-            //         firstCol: yylloc.first_column + 1,
-            //         lastCol: yylloc.last_column + 1,
-            //         originContent: scContent
-            //     }
-            // });
-        }
-
-
-        var content = '';
-        var quote = '';
-
-        if (/url\((.*)\)/.test(removeSpaceAroundYYtext)) {
-            content = 'url(' + RegExp.$1 + ')';
-            if (/(['"])([\s\S]*)\1/.test(content)) {
-                quote = RegExp.$1;
-            }
-        }
-        else {
-            /(['"])([\s\S]*)\1/.test(yytext);
-            content = RegExp.$2;
-            quote = RegExp.$1;
-        }
-
-        if (!content) {
-            content = removeSpaceAroundYYtext;
-        }
-
-        // 移除左边空格后的 yytext
-        var removeSpaceBeforeYYtext = yytext.replace(/^(\s*)/, '');
-        var beforeSpace = RegExp.$1 || '';
-
-        // 移除右边空格后的 yytext
-        var removeSpaceAfterYYtext = yytext.replace(/(\s*)$/, '');
-        var afterSpace = RegExp.$1;
-
-        if (!yy.imports) {
-            yy.imports = [];
-        }
-
-        yy.imports.push({
-            type: 'import',
-            content: content,
-            quote: quote,
-            before: beforeSpace,
-            after: afterSpace,
-            loc: {
-                firstLine: yylloc.first_line,
-                lastLine: yylloc.last_line,
-                firstCol: yylloc.first_column + 1 + beforeSpace.length,
-                lastCol: yylloc.last_column + 1,
-                originContent: yytext
-            }
-        });
-    }
-;
-
-<im>\n+
-    {
-        this.popState();
+        return 'STRING';
     }
 ;
 
 <s>{charset}
     {
-        this.begin('ch');
+        // this.begin('ch');
+        return 'CHARSET';
     }
 ;
 
-<ch>[^\n]+
+<INITIAL>
     {
-        /(['"])([\s\S]*)\1/.test(yytext);
-        var content = RegExp.$2;
-        var quote = RegExp.$1;
-
-        /^(\s*)/.test(yytext);
-        var before = RegExp.$1 || '';
-
-        /(\s*)$/.test(yytext);
-        var after = RegExp.$1;
-
-        if (!yy.charsets) {
-            yy.charsets = [];
-        }
-
-        yy.charsets.push({
-            type: 'charset',
-            content: content,
-            quote: quote,
-            before: before,
-            after: after,
-            loc: {
-                firstLine: yylloc.first_line,
-                lastLine: yylloc.last_line,
-                firstCol: yylloc.first_column + 1 + before.length,
-                lastCol: yylloc.last_column + 1,
-                originContent: yytext
-            }
-        });
-    }
-;
-
-<ch>\n+
-    {
-        this.popState();
-    }
-;*/
-
-<INITIAL><<EOF>>
-    {
-        return 'EOF';
+        this.begin('s');
     }
 ;
 
@@ -295,9 +94,9 @@ quote                       ['"]
     }
 ;
 
-<INITIAL>
+<INITIAL><<EOF>>
     {
-        this.begin('s');
+        return 'EOF';
     }
 ;
 
